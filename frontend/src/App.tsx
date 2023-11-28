@@ -29,7 +29,7 @@ function App() {
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
-        <Chip label="Material Element Test" style={{backgroundColor:'green'}}></Chip>
+        <Chip label="Material Element Test" style={{backgroundColor:'yellow'}}></Chip>
     </>
   )
 }
