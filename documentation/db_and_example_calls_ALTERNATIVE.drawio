@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2023-12-06T16:57:15.467Z" agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/119.0" etag="Of3BFxDTBLQgmhao0G_T" version="22.1.6" type="device">
+<mxfile host="app.diagrams.net" modified="2023-12-06T17:06:43.455Z" agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/119.0" etag="g8GiJq8v5QVpsPRA1rr5" version="22.1.6" type="device">
   <diagram name="Page-1" id="NDN9KeNNC8J2o7ZwxCbk">
-    <mxGraphModel dx="969" dy="551" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="1114" dy="634" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -273,7 +273,7 @@
         <mxCell id="V72TT_G_U1BwRDYPwamN-27" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=inherit;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=16;" parent="V72TT_G_U1BwRDYPwamN-26" vertex="1">
           <mxGeometry width="465" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="QXjFbJ2Z94m7eyB_QPew-4" value="ID" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=16;" vertex="1" parent="V72TT_G_U1BwRDYPwamN-27">
+        <mxCell id="QXjFbJ2Z94m7eyB_QPew-4" value="ID" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=16;" parent="V72TT_G_U1BwRDYPwamN-27" vertex="1">
           <mxGeometry width="65" height="40" as="geometry">
             <mxRectangle width="65" height="40" as="alternateBounds" />
           </mxGeometry>
@@ -301,7 +301,7 @@
         <mxCell id="V72TT_G_U1BwRDYPwamN-31" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=inherit;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=16;" parent="V72TT_G_U1BwRDYPwamN-26" vertex="1">
           <mxGeometry y="40" width="465" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="QXjFbJ2Z94m7eyB_QPew-5" value="1" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=16;" vertex="1" parent="V72TT_G_U1BwRDYPwamN-31">
+        <mxCell id="QXjFbJ2Z94m7eyB_QPew-5" value="1" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=16;" parent="V72TT_G_U1BwRDYPwamN-31" vertex="1">
           <mxGeometry width="65" height="40" as="geometry">
             <mxRectangle width="65" height="40" as="alternateBounds" />
           </mxGeometry>
@@ -329,7 +329,7 @@
         <mxCell id="V72TT_G_U1BwRDYPwamN-35" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=inherit;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=16;" parent="V72TT_G_U1BwRDYPwamN-26" vertex="1">
           <mxGeometry y="80" width="465" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="QXjFbJ2Z94m7eyB_QPew-6" value="2" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=16;" vertex="1" parent="V72TT_G_U1BwRDYPwamN-35">
+        <mxCell id="QXjFbJ2Z94m7eyB_QPew-6" value="2" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=16;" parent="V72TT_G_U1BwRDYPwamN-35" vertex="1">
           <mxGeometry width="65" height="40" as="geometry">
             <mxRectangle width="65" height="40" as="alternateBounds" />
           </mxGeometry>
@@ -357,7 +357,7 @@
         <mxCell id="V72TT_G_U1BwRDYPwamN-141" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=inherit;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=16;" parent="V72TT_G_U1BwRDYPwamN-26" vertex="1">
           <mxGeometry y="120" width="465" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="QXjFbJ2Z94m7eyB_QPew-7" value="3" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=16;" vertex="1" parent="V72TT_G_U1BwRDYPwamN-141">
+        <mxCell id="QXjFbJ2Z94m7eyB_QPew-7" value="3" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=16;" parent="V72TT_G_U1BwRDYPwamN-141" vertex="1">
           <mxGeometry width="65" height="40" as="geometry">
             <mxRectangle width="65" height="40" as="alternateBounds" />
           </mxGeometry>
@@ -385,7 +385,7 @@
         <mxCell id="V72TT_G_U1BwRDYPwamN-145" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=inherit;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=16;" parent="V72TT_G_U1BwRDYPwamN-26" vertex="1">
           <mxGeometry y="160" width="465" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="QXjFbJ2Z94m7eyB_QPew-8" value="4" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=16;" vertex="1" parent="V72TT_G_U1BwRDYPwamN-145">
+        <mxCell id="QXjFbJ2Z94m7eyB_QPew-8" value="4" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=16;" parent="V72TT_G_U1BwRDYPwamN-145" vertex="1">
           <mxGeometry width="65" height="40" as="geometry">
             <mxRectangle width="65" height="40" as="alternateBounds" />
           </mxGeometry>
@@ -413,7 +413,7 @@
         <mxCell id="V72TT_G_U1BwRDYPwamN-174" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;strokeColor=inherit;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=16;" parent="V72TT_G_U1BwRDYPwamN-26" vertex="1">
           <mxGeometry y="200" width="465" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="QXjFbJ2Z94m7eyB_QPew-9" value="5" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=16;" vertex="1" parent="V72TT_G_U1BwRDYPwamN-174">
+        <mxCell id="QXjFbJ2Z94m7eyB_QPew-9" value="5" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;strokeColor=inherit;overflow=hidden;fillColor=none;top=0;left=0;bottom=0;right=0;pointerEvents=1;fontSize=16;" parent="V72TT_G_U1BwRDYPwamN-174" vertex="1">
           <mxGeometry width="65" height="40" as="geometry">
             <mxRectangle width="65" height="40" as="alternateBounds" />
           </mxGeometry>
@@ -592,7 +592,7 @@
         <mxCell id="V72TT_G_U1BwRDYPwamN-195" value="Filled by User" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="1940" y="675" width="220" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="V72TT_G_U1BwRDYPwamN-196" value="&lt;h1&gt;Scenario 1 - Registration&lt;br&gt;&lt;/h1&gt;&lt;p&gt;1. Arduino sends MAC and list of devices (actuators or sensors) to Register Service&lt;/p&gt;&lt;p&gt;2. MAC is stored in Device Table, ID is assigned to each device and send back to the arduino and stored there. Name, Type and MeasureType are NULL&lt;/p&gt;&lt;p&gt;3. User has to configure Name, Type and MeasureType with Webinterface&lt;br&gt;&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
+        <mxCell id="V72TT_G_U1BwRDYPwamN-196" value="&lt;h1&gt;Scenario 1 - Registration&lt;br&gt;&lt;/h1&gt;&lt;p&gt;1. Arduino sends MAC and list of devices (actuators or sensors, name of then to identify in webinterface) to Register Service&lt;/p&gt;&lt;p&gt;2. MAC is stored in Device Table, ID is assigned to each device and send back to the arduino and stored there. Name, Type and MeasureType are NULL&lt;/p&gt;&lt;p&gt;3. User has to configure Name, Type and MeasureType with Webinterface&lt;br&gt;&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="1340" y="20" width="570" height="160" as="geometry" />
         </mxCell>
         <mxCell id="V72TT_G_U1BwRDYPwamN-197" value="&lt;h1&gt;Scenario 2 - Sensor sends data&lt;br&gt;&lt;/h1&gt;&lt;p&gt;1. Arduino of Sensor sends ID and data to Report Service&lt;br&gt;&lt;/p&gt;&lt;p&gt;2. MeasureType is read from Device based on ID&lt;br&gt;&lt;/p&gt;&lt;p&gt;3. Based on Measure Type, Entry is made in Measurement table. Attention: For the Measure Type &quot;Temperature/Humidity&quot; two Entries are made, one for Temperature and one for Humidity. This distinction has to be implemented in the Report Service&lt;br&gt;&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
@@ -604,19 +604,19 @@
         <mxCell id="V72TT_G_U1BwRDYPwamN-211" value="&lt;h1&gt;Scenario 4 - Action is triggered by user&lt;br&gt;&lt;/h1&gt;&lt;p&gt;1. Arduino of Actuators sends IDs Action Service &lt;br&gt;&lt;/p&gt;&lt;p&gt;2. Action Service checks if entry for specific actuator exists&lt;br&gt;&lt;/p&gt;&lt;p&gt;3. If yes, send value to actuator&lt;br&gt;&lt;/p&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="1080" y="910" width="590" height="140" as="geometry" />
         </mxCell>
-        <mxCell id="QXjFbJ2Z94m7eyB_QPew-1" value="" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1">
+        <mxCell id="QXjFbJ2Z94m7eyB_QPew-1" value="" style="endArrow=none;html=1;rounded=0;" parent="1" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="120" y="250" as="sourcePoint" />
             <mxPoint x="140" y="230" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="QXjFbJ2Z94m7eyB_QPew-2" value="" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1">
+        <mxCell id="QXjFbJ2Z94m7eyB_QPew-2" value="" style="endArrow=none;html=1;rounded=0;" parent="1" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="120" y="180" as="sourcePoint" />
             <mxPoint x="140" y="180" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="QXjFbJ2Z94m7eyB_QPew-3" value="" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1">
+        <mxCell id="QXjFbJ2Z94m7eyB_QPew-3" value="" style="endArrow=none;html=1;rounded=0;" parent="1" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="120" y="105" as="sourcePoint" />
             <mxPoint x="150" y="130" as="targetPoint" />
