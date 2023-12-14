@@ -1,6 +1,11 @@
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import "./App.css";
 import MenuBar from "./components/MenuBar";
+import Dashboard from "./components/Dashboard";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Configure from "./components/Configure";
+import Actuators from "./components/Actuators";
+import Sensors from "./components/Sensors";
 
 const theme = createTheme({
   palette: {
@@ -14,8 +19,15 @@ function App() {
   return (
     <>
       <ThemeProvider theme={theme}>
-        <MenuBar></MenuBar>
-        <h1>Welcome to the App!</h1>
+        <Router>
+          <MenuBar></MenuBar>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/configure" element={<Configure />} />
+            <Route path="/actuators" element={<Actuators />} />
+            <Route path="/sensors" element={<Sensors />} />
+          </Routes>
+        </Router>
       </ThemeProvider>
     </>
   );

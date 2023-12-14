@@ -10,6 +10,7 @@ import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import { Yard } from "@mui/icons-material";
+import { Link } from "react-router-dom";
 
 const pages = ["Configure", "Sensors", "Actuators"];
 
@@ -40,8 +41,8 @@ function MenuBar() {
           <Typography
             variant="h5"
             noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
+            component={Link}
+            to="/"
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -59,7 +60,7 @@ function MenuBar() {
             sx={{
               flexGrow: 1,
               display: { xs: "flex", md: "none" },
-              margineLeft: "auto",
+              marginLeft: "auto",
             }}
           >
             <IconButton
@@ -92,7 +93,13 @@ function MenuBar() {
             >
               {pages.map((page) => (
                 <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
+                  <Button
+                    component={Link}
+                    to={`/${page.toLowerCase()}`}
+                    sx={{ textAlign: "center", color: "inherit" }}
+                  >
+                    {page}
+                  </Button>
                 </MenuItem>
               ))}
             </Menu>
@@ -106,8 +113,8 @@ function MenuBar() {
           <Typography
             variant="h6"
             noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
+            component={Link}
+            to="/"
             sx={{
               mr: 2,
               display: { xs: "flex", md: "none" },
@@ -126,13 +133,14 @@ function MenuBar() {
             sx={{
               flexGrow: 1,
               display: { xs: "none", md: "flex" },
-              margineLeft: "auto",
+              marginLeft: "auto",
             }}
           >
             {pages.map((page) => (
               <Button
                 key={page}
-                onClick={handleCloseNavMenu}
+                component={Link}
+                to={`/${page.toLowerCase()}`}
                 sx={{
                   my: 2,
                   color: "white",
@@ -149,4 +157,5 @@ function MenuBar() {
     </AppBar>
   );
 }
+
 export default MenuBar;
