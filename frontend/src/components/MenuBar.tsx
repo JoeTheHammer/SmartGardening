@@ -12,7 +12,7 @@ import MenuItem from "@mui/material/MenuItem";
 import { Yard } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 
-const pages = ["Configure", "Sensors", "Actuators"];
+const pages = ["Setup", "Sensors", "Actuators"];
 
 function MenuBar() {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(

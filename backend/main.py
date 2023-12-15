@@ -114,6 +114,22 @@ def register():
         return jsonify({'error': str(e)}), 500
 
 
+@app.route('/api/newDevices', methods=['GET'])
+def new_devices():
+    try:
+        conn = sqlite3.connect('smart_gardening_db.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM device WHERE name is null')
+        data = cursor.fetchall()
+        conn.close()
+
+        return jsonify({'data': data}), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+
 @app.route('/api/report', methods=['POST'])
 def report():
     try:
