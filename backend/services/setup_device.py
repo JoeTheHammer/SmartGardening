@@ -20,6 +20,7 @@ def register():
         conn.commit()
         data = cursor.fetchall()
         if len(data) != 0:
+            conn.close()
             return jsonify({'message': 'OK'}), 200
         
         #add new device id to the table
