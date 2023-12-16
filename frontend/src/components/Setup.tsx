@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import ConfigureDeviceDialog, {
   ConfigureDeviceDialogProps,
 } from "./ConfigureDeviceDialog";
+import { API_URL } from "../constants";
 
 interface ApiResponse {
   data: Array<Array<string | null>>;
@@ -19,7 +20,7 @@ interface NewDevice {
 }
 
 function Setup() {
-  const getNewDevicesEndpoint = "http://localhost:5000/api/newDevices";
+  const getNewDevicesEndpoint = API_URL + "/newDevices";
 
   const [newDevices, setNewDevices] = useState<Array<NewDevice> | null>(null);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);

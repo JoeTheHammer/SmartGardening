@@ -10,6 +10,7 @@ import { MeasureType, DeviceType } from "../enums";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import InputLabel from "@mui/material/InputLabel";
 import Box from "@mui/material/Box";
+import { API_URL } from "../constants";
 
 export interface ConfigureDeviceDialogProps {
   open: boolean;
@@ -63,7 +64,7 @@ function ConfigureDeviceDialog(props: ConfigureDeviceDialogProps) {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/device", {
+      const response = await fetch(API_URL + "/device", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

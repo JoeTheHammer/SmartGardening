@@ -26,7 +26,7 @@ def register_device():
     api_url = 'http://localhost:5000/api/register'
 
     # Data to be sent in the request body
-    data = {'id': '123:324:hallo:234'}
+    data = {'id': '123:324:34se:234'}
 
     try:
         # Make a POST request to the API endpoint
