@@ -64,7 +64,7 @@ function ConfigureDeviceDialog(props: ConfigureDeviceDialogProps) {
     }
 
     try {
-      const response = await fetch(API_URL + "/device", {
+      const response = await fetch(API_URL + "/device/modify_info", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
