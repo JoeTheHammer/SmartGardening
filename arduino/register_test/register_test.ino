@@ -5,7 +5,7 @@ const char* ssid = "Vodafone-C02030120";
 const char* password = "pEyK4khRrLGC6NZr";
 
 // REST API endpoint
-const char* server = "192.168.1.8";
+const char* server = "192.168.1.7";
 const int port = 5000; // Change this to the appropriate port
 
 WiFiClient wifiClient;
@@ -77,7 +77,7 @@ void sendJsonGet(const char* server, const int port, String path, String getData
 
 void sendRegisterDevicePost(String macString){
   String result = "";
-  sendJsonPost(server, port, "/api/register", getJsonDataRegister(macString), &result);
+  sendJsonPost(server, port, "/api/device/register", getJsonDataRegister(macString), &result);
   Serial.println(result);
 }
 
@@ -162,11 +162,11 @@ void setup() {
 void loop() {
   Serial.println("Registered:");
   String result = "";
-  sendJsonGet(server, port, "/api/testGet", getJsonDataRegister(getMacString()), &result);
-  Serial.println(result);
-  String response = extractResponse(result, "message");
-  Serial.println(response);
-  delay(10000);
+  //sendJsonGet(server, port, "/api/testGet", getJsonDataRegister(getMacString()), &result);
+  //Serial.println(result);
+  //String response = extractResponse(result, "message");
+  //Serial.println(response);
+  delay(1000000);
 }
 
 

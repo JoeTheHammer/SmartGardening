@@ -20,7 +20,7 @@ interface NewDevice {
 }
 
 function Setup() {
-  const getNewDevicesEndpoint = API_URL + "/newDevices";
+  const getNewDevicesEndpoint = API_URL + "/device/new";
 
   const [newDevices, setNewDevices] = useState<Array<NewDevice> | null>(null);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
