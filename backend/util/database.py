@@ -37,6 +37,11 @@ def setup_database(sql_db_path:str):
         '''CREATE TABLE IF NOT EXISTS threshold (id STRING, measure_type TEXT, value REAL, PRIMARY KEY (id, measure_type, value))''',
         '''CREATE TABLE IF NOT EXISTS action_status (id STRING PRIMARY KEY, value REAL)'''
         ]
+    
+    if not os.path.exists(sql_db_path):
+        open(sql_db_path, 'w')
+        logging.info("DB has been created")
+
     execute_sql_queries(sql_db_path , sql_queries)
     logging.info("DB has been initialized")
 
@@ -55,10 +60,11 @@ def execute_sql_queries(sql_db_path:str , sql_queries:list) -> list:
         for sql_query in sql_queries:
             cursor.execute(sql_query)
             sql_data += cursor.fetchall()
-    
+
         conn.commit()
         conn.close()
     except Exception as e:
         logging.error(f"Error while executing db queries:\n{str(e)}")
+        raise e
 
     return sql_data
