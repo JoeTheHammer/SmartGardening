@@ -5,6 +5,8 @@
 dht DHT;
 #define DHT22_pin 8
 int measure;
+
+
 const char* ssid = "WiFi-LabIoT";
 const char* password = "s1jzsjkw5b";
 byte mac[6];
@@ -53,7 +55,7 @@ void loop() {
   String result = "";
   measure = DHT.read22(DHT22_pin);
   String measurementString = getMeasurementString();
-  sendJsonPost(server, port, "/api/report", getJsonData(macString, getMeasurementString()), &result);
+  sendJsonPost(server, port, "/api/report", getJsonDataForTemperatureHumidity(macString, getMeasurementString()), &result);
   Serial.println("RESULT:");
   Serial.println(result);
   delay(20000);
@@ -68,7 +70,7 @@ String getMeasurementString() {
   return measurementString;
 }
 
-String getJsonData(String macString, String measurementString){
+String getJsonDataForTemperatureHumidity(String macString, String measurementString){
   String jsonPayload;
   DynamicJsonDocument doc(200);
   doc["mac"] = macString;
