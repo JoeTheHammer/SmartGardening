@@ -68,7 +68,7 @@ def setup_database():
             name STRING,
             PRIMARY KEY (sensor_id, actuator_id),
             FOREIGN KEY (sensor_id) REFERENCES device(id),
-            FOREIGN KEY (actuator_id) REFERENCES device(mac)
+            FOREIGN KEY (actuator_id) REFERENCES device(id)
         )
     ''')
 
@@ -95,6 +95,8 @@ def setup_database():
 
 
 setup_database()
+
+
 # reset_database()
 
 
@@ -123,13 +125,13 @@ def new_devices():
         cursor = conn.cursor()
         cursor.execute('SELECT * FROM device WHERE name is null')
         data = cursor.fetchall()
+        conn.commit()
         conn.close()
 
         return jsonify({'data': data}), 200
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
 
 
 @app.route('/api/report', methods=['POST'])
@@ -141,21 +143,21 @@ def report():
 
         return jsonify({'message': 'OK'}), 201
 
-        #conn = sqlite3.connect('smart_gardening_db.db')
-        #cursor = conn.cursor()
+        # conn = sqlite3.connect('smart_gardening_db.db')
+        # cursor = conn.cursor()
 
-        #cursor.execute('SELECT measure_type FROM device WHERE MAC = ?', (mac,))
+        # cursor.execute('SELECT measure_type FROM device WHERE MAC = ?', (mac,))
 
-        #data = cursor.fetchall()
-        #measure_type = data[0][0]
+        # data = cursor.fetchall()
+        # measure_type = data[0][0]
 
-        #print(measure_type)
+        # print(measure_type)
 
-        #cursor.execute('INSERT INTO measurement (mac, value, measure_type) VALUES (?,?,?)', (mac, value, measure_type))
-        #conn.commit()
-        #conn.close()
+        # cursor.execute('INSERT INTO measurement (mac, value, measure_type) VALUES (?,?,?)', (mac, value, measure_type))
+        # conn.commit()
+        # conn.close()
 
-        #return jsonify({'message': 'Data added successfully'}), 201
+        # return jsonify({'message': 'Data added successfully'}), 201
     except Exception as e:
         print(e)
         return jsonify({'error': str(e)}), 500
@@ -172,6 +174,33 @@ def get_all_devices():
         conn.close()
 
         return jsonify({'data': data}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/device', methods=['POST'])
+def update_device():
+    try:
+
+        received_data = request.get_json()
+        id = received_data['id']
+        name = received_data['name']
+        device_type = received_data['deviceType']
+        measure_type = received_data['measureType']
+        measure_amount = received_data['measureAmount']
+
+        conn = sqlite3.connect('smart_gardening_db.db')
+        cursor = conn.cursor()
+        cursor.execute('''
+                UPDATE device
+                SET name = ?, type = ?, measure_type = ?, measure_amount = ?
+                WhERE id = ? 
+            ''',(name, device_type, measure_type, measure_amount, id))
+        conn.commit()
+        conn.close()
+
+        return jsonify({'message': 'OK'}), 201
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

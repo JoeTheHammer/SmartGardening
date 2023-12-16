@@ -39,15 +39,55 @@ function ConfigureDeviceDialog(props: ConfigureDeviceDialogProps) {
     onClose(""); // Pass an empty string (or any default value) when closing the dialog
   };
 
-  const handleSave = () => {
-    console.log("Submit with name:", name);
-    console.log("Submit with Device Type:", deviceType);
-    if (deviceType === DeviceType.SENSOR) {
-      console.log("Submit with Measure Type:", measureType);
-      console.log("Submit with Measure Amount:", measureAmount);
+  const handleSave = async () => {
+    var sendName = null;
+    var sendDeviceType = null;
+    var sendMeasureType = null;
+    var sendMeasureAmount = null;
+
+    if (name !== null) {
+      sendName = name;
     }
 
-    //TODO: Make post request with the values and id
+    if (deviceType != null) {
+      sendDeviceType = deviceType.toString();
+    }
+
+    if (deviceType != null && deviceType === DeviceType.SENSOR) {
+      if (measureType != null) {
+        sendMeasureType = measureType.toString();
+      }
+      if (measureAmount != null) {
+        sendMeasureAmount = measureAmount.toString();
+      }
+    }
+
+    try {
+      const response = await fetch("http://localhost:5000/api/device", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: id,
+          name: sendName,
+          deviceType: sendDeviceType,
+          measureType: sendMeasureType,
+          measureAmount: sendMeasureAmount,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const responseData = await response.json();
+      console.log("Server response:", responseData);
+
+      handleClose();
+    } catch (error) {
+      console.error("Error sending data:", error);
+    }
   };
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
