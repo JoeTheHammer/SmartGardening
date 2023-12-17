@@ -12,34 +12,52 @@ import InputLabel from "@mui/material/InputLabel";
 import Box from "@mui/material/Box";
 import { API_URL } from "../constants";
 
+// Interface definition for this component.
 export interface ConfigureDeviceDialogProps {
   open: boolean;
-  id: string;
+  id: string | null;
+  initialName: string;
+  initialDeviceType: DeviceType | null;
+  initialMeasureType: MeasureType | null;
+  initialMeasureAmount: string;
+
   onClose: (value: string) => void;
 }
 
 function ConfigureDeviceDialog(props: ConfigureDeviceDialogProps) {
-  const { open, id, onClose } = props;
+  // Get props from parent component.
+  const {
+    open,
+    id,
+    initialName,
+    initialDeviceType,
+    initialMeasureType,
+    initialMeasureAmount,
+    onClose,
+  } = props;
 
+  // Set variables with state.
   const [name, setName] = useState("");
   const [deviceType, setDeviceType] = useState<DeviceType | null>(null);
   const [measureType, setMeasureType] = useState<MeasureType | null>(null);
   const [measureAmount, setMeasureAmount] = useState<string>("");
 
+  // Initialize data, use data that was given from parent component.
   useEffect(() => {
-    // Reset values when the dialog is opened
     if (open) {
-      setName("");
-      setDeviceType(null);
-      setMeasureType(null);
-      setMeasureAmount("");
+      setName(initialName);
+      setDeviceType(initialDeviceType);
+      setMeasureType(initialMeasureType);
+      setMeasureAmount(initialMeasureAmount);
     }
   }, [open]);
 
+  // Return value to paren component on close.
   const handleClose = () => {
-    onClose(""); // Pass an empty string (or any default value) when closing the dialog
+    onClose("");
   };
 
+  // Send value to backend.
   const handleSave = async () => {
     var sendName = null;
     var sendDeviceType = null;
@@ -91,6 +109,7 @@ function ConfigureDeviceDialog(props: ConfigureDeviceDialogProps) {
     }
   };
 
+  // Handle changes of values in dialog.
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
   };
@@ -133,10 +152,9 @@ function ConfigureDeviceDialog(props: ConfigureDeviceDialogProps) {
           </Box>
           <InputLabel id="device-type-select-label">Device Type</InputLabel>
           <Select
-            defaultValue=""
             labelId="device-type-select-label"
             id="device-type-select"
-            value={deviceType?.toString()}
+            value={deviceType ? deviceType.toString() : ""}
             label="Device Type"
             onChange={handleDeviceTypeChange}
             fullWidth
@@ -160,10 +178,9 @@ function ConfigureDeviceDialog(props: ConfigureDeviceDialogProps) {
                 Measure Type
               </InputLabel>
               <Select
-                defaultValue=""
                 labelId="measure-type-select-label"
                 id="measure-type-select"
-                value={measureType?.toString()}
+                value={measureType ? measureType.toString() : ""}
                 label="Measure Type"
                 onChange={handleMeasureTypeChange}
                 fullWidth
@@ -182,7 +199,6 @@ function ConfigureDeviceDialog(props: ConfigureDeviceDialogProps) {
                 Measure Amount
               </InputLabel>
               <Select
-                defaultValue=""
                 labelId="measure-amount-select-label"
                 id="measure-amount-select"
                 value={measureAmount}
