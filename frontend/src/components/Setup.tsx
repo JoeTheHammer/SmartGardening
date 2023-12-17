@@ -63,8 +63,8 @@ function Setup() {
     open: isDialogOpen,
     id: selectedDeviceId, // Provide an empty string as a default value
     initialName: "",
-    initialDeviceType: "",
-    initialMeasureType: "",
+    initialDeviceType: null,
+    initialMeasureType: null,
     initialMeasureAmount: "",
     onClose: handleCloseDialog,
   };
