@@ -12,6 +12,7 @@ import { MeasureType, DeviceType } from "../enums";
 import ConfigureDeviceDialog, {
   ConfigureDeviceDialogProps,
 } from "./ConfigureDeviceDialog";
+import { useNavigate } from "react-router-dom";
 
 function Sensors() {
   interface Sensor {
@@ -20,6 +21,8 @@ function Sensors() {
     measureType: MeasureType | null;
     measureAmount: string;
   }
+
+  const navigate = useNavigate();
 
   const handleCloseDialog = () => {
     setDialogOpen(false);
@@ -32,6 +35,9 @@ function Sensors() {
 
   const [sensorList, setSensorList] = useState<Array<Sensor> | null>(null);
   const [isDialogOpen, setDialogOpen] = useState(false);
+  const [activeSensorDataId, setActiveSensorDataId] = useState<String | null>(
+    null
+  );
 
   const [configureDialogProps, setConfigureDialogProps] =
     useState<ConfigureDeviceDialogProps>({
@@ -70,7 +76,7 @@ function Sensors() {
     setSensorList(initialSensors);
   }, []);
 
-  const handleButtonClick = (sensor: Sensor) => {
+  const handleOpenConfigClick = (sensor: Sensor) => {
     setDialogOpen(true);
 
     setConfigureDialogProps((prevProps) => ({
@@ -82,6 +88,10 @@ function Sensors() {
       initialMeasureType: sensor.measureType,
       initialMeasureAmount: sensor.measureAmount,
     }));
+  };
+
+  const handleOpenDataClick = (sensorId: String) => {
+    navigate(`/sensor-data/${sensorId}`);
   };
 
   return (
@@ -123,7 +133,7 @@ function Sensors() {
                   <TableCell align="left">{sensor.measureAmount}</TableCell>
                   <TableCell align="left">
                     <Button
-                      onClick={() => handleButtonClick(sensor)}
+                      onClick={() => handleOpenConfigClick(sensor)}
                       color="primary"
                       startIcon={<Settings></Settings>}
                     >
@@ -132,7 +142,7 @@ function Sensors() {
                   </TableCell>
                   <TableCell align="left">
                     <Button
-                      onClick={() => handleButtonClick(sensor)}
+                      onClick={() => handleOpenDataClick(sensor.id)}
                       color="primary"
                       startIcon={<BarChart></BarChart>}
                     >

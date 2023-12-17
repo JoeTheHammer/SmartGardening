@@ -59,6 +59,11 @@ def report():
 
 
 # API entrypoint that retrieves all masurement data of a specific sensor
+# Response should look like this:
+# {[measure_value: 'Temperature', measurements: [{timestamp: '01.02...', value: 23}, {timestamp: '01.02...', value: 23}],
+# [measure_value: 'Humidity', measurements: [{timestamp: '01.02...', value: 23}, {timestamp: '01.02...', value: 23}]]}
+# So a list with the elements measure_value that indicates the measure value (like temperature)
+# and with measurements, that contain a list with timestamp, value paris for the corresponding sensor and measure value
 @app.route('/api/get_measurements', methods=['GET'])
 def get_measurements():
     try:
