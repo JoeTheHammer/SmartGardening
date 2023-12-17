@@ -7,7 +7,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Button } from "@mui/material";
-import { Settings, BarChart } from "@mui/icons-material";
+import { Settings, ShowChart } from "@mui/icons-material";
 import { MeasureType, DeviceType } from "../enums";
 import ConfigureDeviceDialog, {
   ConfigureDeviceDialogProps,
@@ -25,8 +25,6 @@ function Sensors() {
   const navigate = useNavigate();
 
   const handleCloseDialog = () => {
-    setDialogOpen(false);
-
     setConfigureDialogProps((prevProps) => ({
       ...prevProps,
       open: false,
@@ -34,10 +32,6 @@ function Sensors() {
   };
 
   const [sensorList, setSensorList] = useState<Array<Sensor> | null>(null);
-  const [isDialogOpen, setDialogOpen] = useState(false);
-  const [activeSensorDataId, setActiveSensorDataId] = useState<String | null>(
-    null
-  );
 
   const [configureDialogProps, setConfigureDialogProps] =
     useState<ConfigureDeviceDialogProps>({
@@ -77,8 +71,6 @@ function Sensors() {
   }, []);
 
   const handleOpenConfigClick = (sensor: Sensor) => {
-    setDialogOpen(true);
-
     setConfigureDialogProps((prevProps) => ({
       ...prevProps,
       open: true,
@@ -144,7 +136,7 @@ function Sensors() {
                     <Button
                       onClick={() => handleOpenDataClick(sensor.id)}
                       color="primary"
-                      startIcon={<BarChart></BarChart>}
+                      startIcon={<ShowChart></ShowChart>}
                     >
                       Data
                     </Button>

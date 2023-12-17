@@ -52,7 +52,7 @@ function ConfigureDeviceDialog(props: ConfigureDeviceDialogProps) {
     }
   }, [open]);
 
-  // Return value to paren component on close.
+  // Return value to parent component on close.
   const handleClose = () => {
     onClose("");
   };
