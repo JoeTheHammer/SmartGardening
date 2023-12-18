@@ -19,6 +19,7 @@ function SensorData() {
   const [sensorData, setSensorData] =
     useState<Array<SensorDataPerMeasureValue> | null>(null);
 
+  //TODO: Delete static data
   const initialSensorData: Array<SensorDataPerMeasureValue> = [
     {
       measureValue: MeasureValue.TEMPERATURE,
@@ -69,17 +70,15 @@ function SensorData() {
   );
 
   useEffect(() => {
+    //TODO: Get sensor data from backend by sensor id.
     setSensorData(initialSensorData);
   }, []);
-
-  //Fetch data like this:
-  //{[measure_value: 'Temperature', measurements: [{timestamp: '01.02...', value: 23}, {timestamp: '01.02...', value: 23}],
-  //[measure_value: 'Humidity', measurements: [{timestamp: '01.02...', value: 23}, {timestamp: '01.02...', value: 23}]]}
 
   return (
     <>
       <h2 className="text-center">Data of Sensor {sensorId}</h2>
       {sensorData && (
+        //TODO: Render this based on amount of sensors
         <>
           <h5 className="text-center">
             {sensorData[0].measureValue}: Current Value: {mostRecentValue}

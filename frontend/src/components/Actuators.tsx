@@ -72,6 +72,7 @@ function Actuators() {
       onClose: handleCloseDialog,
     });
 
+  //TODO: Delete static data.
   const initialActuators: Array<Actuator> = [
     {
       id: "1",
@@ -91,8 +92,7 @@ function Actuators() {
   ];
 
   useEffect(() => {
-    // Set the initial sensor list inside the useEffect hook
-    //TODO: Load actuators from backend
+    //TODO: Load actuators from backend.
     setActuatorList(initialActuators);
   }, []);
 
@@ -116,6 +116,7 @@ function Actuators() {
     console.log(
       "Actuator" + actuator.id + "set Status to " + !actuator.actionOn
     );
+    //TODO: Write entry in "Command" table.
   };
 
   const handleGroupDialogClick = (actuator: Actuator) => {

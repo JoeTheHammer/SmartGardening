@@ -56,13 +56,12 @@ function GroupDialog(props: GroupDialogProps) {
   useEffect(() => {
     if (open) {
       // TODO: Load Initial Group Data
-      // TODO: Load Initial Available Sensor Data
+      // TODO: Load Initial Available Sensors
       // Set the initial sensor list inside the useEffect hook
       //setGroupData(initialGroupData);
       //if (groupData !== null) {
       //  setFormName(groupData.name);
       //}
-      console.log("INIT GROUP DIALOG!");
       setAvailableSensors(initialSensors);
     }
   }, [open]);

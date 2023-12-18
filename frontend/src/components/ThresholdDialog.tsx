@@ -33,7 +33,7 @@ function ThresholdDialog(props: ThresholdDialogProps) {
     // Load and set initial threshold values and set data if it exists in the db.
     // Also, set active to true if data exists.
     if (open) {
-      console.log("INIT THRESHOLD DIALOG!");
+      //TODO: Get data from backend and set values if applicable
       const initialThresholdData: ThresholdData[] = Object.values(
         MeasureValue
       ).map((measureValue) => ({
@@ -51,6 +51,7 @@ function ThresholdDialog(props: ThresholdDialogProps) {
   };
 
   const handleSave = () => {
+    //TODO: Send data to backend to store, close dialog and reload actuators.
     console.log("Save clicked");
   };
 

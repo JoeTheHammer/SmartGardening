@@ -22,6 +22,7 @@ function Sensors() {
     measureAmount: string;
   }
 
+  // Used to navigate the data page.
   const navigate = useNavigate();
 
   const handleCloseDialog = () => {
@@ -33,6 +34,7 @@ function Sensors() {
 
   const [sensorList, setSensorList] = useState<Array<Sensor> | null>(null);
 
+  // Set initial configure props
   const [configureDialogProps, setConfigureDialogProps] =
     useState<ConfigureDeviceDialogProps>({
       open: false,
@@ -44,6 +46,7 @@ function Sensors() {
       onClose: handleCloseDialog,
     });
 
+  //TODO: Remove static sensors.
   const initialSensors: Array<Sensor> = [
     {
       id: "1",
@@ -66,7 +69,7 @@ function Sensors() {
   ];
 
   useEffect(() => {
-    // Set the initial sensor list inside the useEffect hook
+    //TODO: Get sensor list from backend.
     setSensorList(initialSensors);
   }, []);
 
