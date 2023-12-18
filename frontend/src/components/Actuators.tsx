@@ -93,6 +93,7 @@ function Actuators() {
 
   useEffect(() => {
     //TODO: Load actuators from backend.
+    //TODO: Load actuator status from "Command" table for button
     setActuatorList(initialActuators);
   }, []);
 
