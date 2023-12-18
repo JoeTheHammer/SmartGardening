@@ -9,3 +9,8 @@ logging.basicConfig(
         logging.StreamHandler()
     ]
 )
+
+# Change logging for the flask backend
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.DEBUG)
+#log.setLevel(logging.ERROR)

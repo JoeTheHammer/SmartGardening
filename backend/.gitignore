@@ -3,3 +3,4 @@ virtualenv
 identifier.sqlite
 smart_gardening_db.db
 app.log
+*.pyc
