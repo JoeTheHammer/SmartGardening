@@ -6,6 +6,10 @@ from flask import jsonify
 
 from __main__ import app
 
+# This module takes care of all the setup process of each device that connects to the server
+# The route of this API starts with '/api/device/<service_name>'
+
+
 # API endpoint for arduino ping to server
 @app.route('/api/device/register', methods=['POST'])
 def register():
@@ -23,14 +27,14 @@ def register():
             conn.close()
             return jsonify({'message': 'OK'}), 200
         
-        #add new device id to the table
+        #add new device id to the table and return http status created to client
         cursor.execute('INSERT INTO device (id) VALUES (?)', (incoming_id,))
         conn.commit()
         conn.close()
         return jsonify({'message': 'Data added successfully'}), 201
     
     except Exception as e:
-        logging.error(f"Error in API call '/api/register':\n{str(e)}")
+        logging.error(f"Error in API call '/api/device/register':\n{str(e)}")
         return jsonify({'error': str(e)}), 500
     
 
@@ -48,6 +52,7 @@ def new_devices():
         return jsonify({'data': data}), 200
 
     except Exception as e:
+        logging.error(f"Error in API call '/api/device/new':\n{str(e)}")
         return jsonify({'error': str(e)}), 500
     
 
@@ -76,4 +81,5 @@ def modify_device_info():
         return jsonify({'message': 'OK'}), 201
 
     except Exception as e:
+        logging.error(f"Error in API call '/api/device/modify_info':\n{str(e)}")
         return jsonify({'error': str(e)}), 500
