@@ -54,15 +54,18 @@ function GroupDialog(props: GroupDialogProps) {
   ];
 
   useEffect(() => {
-    // TODO: Load Initial Group Data
-    // TODO: Load Initial Available Sensor Data
-    // Set the initial sensor list inside the useEffect hook
-    setGroupData(initialGroupData);
-    if (groupData !== null) {
-      setFormName(groupData.name);
+    if (open) {
+      // TODO: Load Initial Group Data
+      // TODO: Load Initial Available Sensor Data
+      // Set the initial sensor list inside the useEffect hook
+      //setGroupData(initialGroupData);
+      //if (groupData !== null) {
+      //  setFormName(groupData.name);
+      //}
+      console.log("INIT GROUP DIALOG!");
+      setAvailableSensors(initialSensors);
     }
-    setAvailableSensors(initialSensors);
-  }, []);
+  }, [open]);
 
   useEffect(() => {
     // Set formName after groupData is updated

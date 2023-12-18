@@ -92,6 +92,7 @@ function Actuators() {
 
   useEffect(() => {
     // Set the initial sensor list inside the useEffect hook
+    //TODO: Load actuators from backend
     setActuatorList(initialActuators);
   }, []);
 
@@ -215,7 +216,7 @@ function Actuators() {
         </TableContainer>
       ) : (
         <h4 className="text-center">
-          There are no sensors known to the system.
+          There are no Acutators known to the system.
         </h4>
       )}
       <ConfigureDeviceDialog {...configureDialogProps} />

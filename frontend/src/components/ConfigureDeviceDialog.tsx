@@ -45,6 +45,7 @@ function ConfigureDeviceDialog(props: ConfigureDeviceDialogProps) {
   // Initialize data, use data that was given from parent component.
   useEffect(() => {
     if (open) {
+      console.log("INIT CONFIG DIALOG!");
       setName(initialName);
       setDeviceType(initialDeviceType);
       setMeasureType(initialMeasureType);
