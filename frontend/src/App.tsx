@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Setup from "./components/Setup";
 import Actuators from "./components/Actuators";
 import Sensors from "./components/Sensors";
+import SensorData from "./components/SensorData";
 
 const theme = createTheme({
   palette: {
@@ -26,6 +27,7 @@ function App() {
             <Route path="/setup" element={<Setup />} />
             <Route path="/actuators" element={<Actuators />} />
             <Route path="/sensors" element={<Sensors />} />
+            <Route path="/sensor-data/:sensorId" element={<SensorData />} />
           </Routes>
         </Router>
       </ThemeProvider>

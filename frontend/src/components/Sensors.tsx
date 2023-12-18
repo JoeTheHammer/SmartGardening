@@ -6,48 +6,87 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { Button } from "@mui/material"; // Import Button from Material-UI
-import { Settings, BarChart } from "@mui/icons-material";
+import { Button } from "@mui/material";
+import { Settings, ShowChart } from "@mui/icons-material";
+import { MeasureType, DeviceType } from "../enums";
+import ConfigureDeviceDialog, {
+  ConfigureDeviceDialogProps,
+} from "./ConfigureDeviceDialog";
+import { useNavigate } from "react-router-dom";
 
 function Sensors() {
   interface Sensor {
     id: string;
     name: string;
-    measureType: String;
-    measureAmount: number;
+    measureType: MeasureType | null;
+    measureAmount: string;
   }
+
+  // Used to navigate the data page.
+  const navigate = useNavigate();
+
+  const handleCloseDialog = () => {
+    setConfigureDialogProps((prevProps) => ({
+      ...prevProps,
+      open: false,
+    }));
+  };
 
   const [sensorList, setSensorList] = useState<Array<Sensor> | null>(null);
 
+  // Set initial configure props
+  const [configureDialogProps, setConfigureDialogProps] =
+    useState<ConfigureDeviceDialogProps>({
+      open: false,
+      id: "",
+      initialName: "",
+      initialDeviceType: DeviceType.SENSOR,
+      initialMeasureType: null,
+      initialMeasureAmount: "",
+      onClose: handleCloseDialog,
+    });
+
+  //TODO: Remove static sensors.
   const initialSensors: Array<Sensor> = [
     {
       id: "1",
-      name: "Custom Sensor",
-      measureType: "Humidity/Temperature",
-      measureAmount: 2,
+      name: "Sensor 1",
+      measureType: MeasureType.TEMPERATURE_HUMIDITY,
+      measureAmount: "2",
     },
     {
       id: "2",
-      name: "Custom Sensor",
-      measureType: "AirQulity",
-      measureAmount: 1,
+      name: "Sensor 2",
+      measureType: MeasureType.AIR_QUALITY,
+      measureAmount: "1",
     },
     {
       id: "3",
-      name: "Custom Sensor",
-      measureType: "Moisture",
-      measureAmount: 1,
+      name: "Sensor 3",
+      measureType: MeasureType.MOISTURE,
+      measureAmount: "1",
     },
   ];
 
   useEffect(() => {
-    // Set the initial sensor list inside the useEffect hook
+    //TODO: Get sensor list from backend.
     setSensorList(initialSensors);
   }, []);
 
-  const handleButtonClick = (id: string) => {
-    console.log("Button clicked for sensor ID:" + id);
-    // Add your custom action based on the sensor ID here
+  const handleOpenConfigClick = (sensor: Sensor) => {
+    setConfigureDialogProps((prevProps) => ({
+      ...prevProps,
+      open: true,
+      id: sensor.id,
+      initialName: sensor.name,
+      initialDeviceType: DeviceType.SENSOR,
+      initialMeasureType: sensor.measureType,
+      initialMeasureAmount: sensor.measureAmount,
+    }));
+  };
+
+  const handleOpenDataClick = (sensorId: String) => {
+    navigate(`/sensor-data/${sensorId}`);
   };
 
   return (
@@ -61,16 +100,16 @@ function Sensors() {
           >
             <TableHead>
               <TableRow>
-                <TableCell>
+                <TableCell align="left">
                   <b>Name</b>
                 </TableCell>
-                <TableCell align="right">
+                <TableCell align="left">
                   <b>ID</b>
                 </TableCell>
-                <TableCell align="right">
+                <TableCell align="left">
                   <b>Measure Type</b>
                 </TableCell>
-                <TableCell align="right">
+                <TableCell align="left">
                   <b>Measure Amount</b>
                 </TableCell>
               </TableRow>
@@ -84,23 +123,23 @@ function Sensors() {
                   <TableCell component="th" scope="row">
                     {sensor.name}
                   </TableCell>
-                  <TableCell align="right">{sensor.id}</TableCell>
-                  <TableCell align="right">{sensor.measureType}</TableCell>
-                  <TableCell align="right">{sensor.measureAmount}</TableCell>
-                  <TableCell align="right">
+                  <TableCell align="left">{sensor.id}</TableCell>
+                  <TableCell align="left">{sensor.measureType}</TableCell>
+                  <TableCell align="left">{sensor.measureAmount}</TableCell>
+                  <TableCell align="left">
                     <Button
-                      onClick={() => handleButtonClick(sensor.id)}
+                      onClick={() => handleOpenConfigClick(sensor)}
                       color="primary"
                       startIcon={<Settings></Settings>}
                     >
                       Config
                     </Button>
                   </TableCell>
-                  <TableCell align="right">
+                  <TableCell align="left">
                     <Button
-                      onClick={() => handleButtonClick(sensor.id)}
+                      onClick={() => handleOpenDataClick(sensor.id)}
                       color="primary"
-                      startIcon={<BarChart></BarChart>}
+                      startIcon={<ShowChart></ShowChart>}
                     >
                       Data
                     </Button>
@@ -115,6 +154,7 @@ function Sensors() {
           There are no sensors known to the system.
         </h4>
       )}
+      <ConfigureDeviceDialog {...configureDialogProps} />
     </>
   );
 }

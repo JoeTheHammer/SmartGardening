@@ -23,7 +23,7 @@ def insert_measuremet_data(value):
 
 def register_device():
     # Set the URL of your Flask API endpoint
-    api_url = 'http://localhost:5000/api/register'
+    api_url = 'http://localhost:5000/api/device/register'
 
     # Data to be sent in the request body
     data = {'id': '123:324:34se:234'}

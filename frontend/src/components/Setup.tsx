@@ -61,7 +61,11 @@ function Setup() {
 
   const configureDialogProps: ConfigureDeviceDialogProps = {
     open: isDialogOpen,
-    id: selectedDeviceId || "", // Provide an empty string as a default value
+    id: selectedDeviceId, // Provide an empty string as a default value
+    initialName: "",
+    initialDeviceType: null,
+    initialMeasureType: null,
+    initialMeasureAmount: "",
     onClose: handleCloseDialog,
   };
 
