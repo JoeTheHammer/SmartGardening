@@ -13,15 +13,12 @@ byte mac[6];
 String macString = "";
 
 // REST API endpoint
-const char* server = "192.168.1.134";
+const char* server = "192.168.1.135";
 const int port = 5000; // Change this to the appropriate port
 
 WiFiClient wifiClient;
 
-void setup() {
-  Serial.begin(9600);
-  Serial.println("Begin Setup ...");
-
+void connectToWifi(){
   WiFi.begin(ssid, password);
 
   if (WiFi.status() == WL_NO_MODULE) {
@@ -38,6 +35,13 @@ void setup() {
   Serial.println("\n");
   Serial.println("Connected to WiFi network");
 
+}
+
+String getMacString(){
+
+  byte mac[6];
+  String macString = "";
+
   WiFi.macAddress(mac);
 
   macString += String(mac[5], HEX);
@@ -49,16 +53,44 @@ void setup() {
 
   Serial.println("MAC Address: " + macString);
 
+  return macString;
 }
 
-void loop() {
+String getJsonDataRegister(String macString){
+  String jsonPayload;
+  DynamicJsonDocument doc(200);
+  doc["id"] = macString;
+  serializeJson(doc, jsonPayload);
+  return jsonPayload;
+}
+
+void sendRegisterDevicePost(String macString){
   String result = "";
-  measure = DHT.read22(DHT22_pin);
-  String measurementString = getMeasurementString();
-  sendJsonPost(server, port, "/api/report", getJsonDataForTemperatureHumidity(macString, getMeasurementString()), &result);
-  Serial.println("RESULT:");
+  sendJsonPost(server, port, "/api/device/register", getJsonDataRegister(macString), &result);
   Serial.println(result);
-  delay(20000);
+}
+
+void connectToWifiAndRegister(){
+  connectToWifi();
+  sendRegisterDevicePost(getMacString());
+}
+
+String extractResponse(String response, String key){
+  int jsonStart = response.indexOf('{');
+
+  // Extract the JSON content
+  String jsonString = response.substring(jsonStart);
+
+  // Parse the JSON content
+  StaticJsonDocument<200> jsonDocument;
+  DeserializationError error = deserializeJson(jsonDocument, jsonString);
+
+
+  // Extract the value of the "message" field
+  String message = jsonDocument[key];
+
+  // Print or store the message
+  return message;
 }
 
 String getMeasurementString() {
@@ -73,7 +105,7 @@ String getMeasurementString() {
 String getJsonDataForTemperatureHumidity(String macString, String measurementString){
   String jsonPayload;
   DynamicJsonDocument doc(200);
-  doc["mac"] = macString;
+  doc["id"] = macString;
   doc["value"] = measurementString;
   serializeJson(doc, jsonPayload);
   return jsonPayload;
@@ -82,6 +114,7 @@ String getJsonDataForTemperatureHumidity(String macString, String measurementStr
 
 void sendJsonPost(const char* server, const int port, String path, String postData, String* response){
   WiFiClient myClient;
+
   if (myClient.connect(server, port)){
     Serial.print("[+]OK: Connected to http//");
     Serial.print(server);
@@ -90,7 +123,7 @@ void sendJsonPost(const char* server, const int port, String path, String postDa
     Serial.println(path);
     myClient.print
     (
-      String("POST ") + "/api/report" + " HTTP/1.1\r\n" +
+      String("POST ") + path + " HTTP/1.1\r\n" +
       "Content-Type: application/json\r\n" +
       "Content-Length: " + postData.length() + "\r\n" +
       "\r\n" +
@@ -110,6 +143,61 @@ void sendJsonPost(const char* server, const int port, String path, String postDa
   while(myClient.available()){
     *response +=  myClient.readString();
   }
+}
+
+
+void sendJsonGet(const char* server, const int port, String path, String getData, String* response){
+  WiFiClient myClient;
+  if (myClient.connect(server, port)){
+    Serial.print("[+]OK: Connected to http//");
+    Serial.print(server);
+    Serial.print(":");
+    Serial.print(port);
+    Serial.println(path);
+    myClient.print
+    (
+      String("GET ") + path + " HTTP/1.1\r\n" +
+      "Content-Type: application/json\r\n" +
+      "Content-Length: " + getData.length() + "\r\n" +
+      "\r\n" +
+      getData
+    );
+  }
+  else {
+    Serial.print("[!]Error: Failed to send post to http//");
+    Serial.print(server);
+    Serial.print(":");
+    Serial.print(port);
+    Serial.println(path);
+  }
+  
+  //wait for data from server
+  while(myClient.available()==0){;}
+  while(myClient.available()){
+    *response +=  myClient.readString();
+  }
+}
+
+
+void setup() {
+  Serial.begin(9600);
+  Serial.println("Begin Setup ...");
+  connectToWifiAndRegister();
+
+}
+
+
+void loop() {
+  String result = "";
+  //measure = DHT.read22(DHT22_pin);
+  //String measurementString = getMeasurementString();
+  //sendJsonPost(server, port, "/api/measurement/report", getJsonDataForTemperatureHumidity(macString, getMeasurementString()), &result);
+  //Serial.println("RESULT:");
+  //Serial.println(result);
+  String measurementString = "23";
+  sendJsonPost(server, port, "/api/measurement/report", getJsonDataForTemperatureHumidity(getMacString(), measurementString), &result);
+
+  delay(10000);
 }
 
 
