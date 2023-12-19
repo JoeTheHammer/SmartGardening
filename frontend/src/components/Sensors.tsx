@@ -8,18 +8,25 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Button } from "@mui/material";
 import { Settings, ShowChart } from "@mui/icons-material";
-import { MeasureType, DeviceType } from "../enums";
+import { SensorType, DeviceType, getSensorTypeFromString } from "../enums";
 import ConfigureDeviceDialog, {
   ConfigureDeviceDialogProps,
 } from "./ConfigureDeviceDialog";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../constants";
+
+const getServicesEndpoint = API_URL + "/device/get_sensors";
 
 function Sensors() {
   interface Sensor {
     id: string;
     name: string;
-    measureType: MeasureType | null;
+    sensorType: SensorType | null;
     measureAmount: string;
+  }
+
+  interface ApiResponse {
+    data: Array<Array<string>>;
   }
 
   // Used to navigate the data page.
@@ -30,9 +37,35 @@ function Sensors() {
       ...prevProps,
       open: false,
     }));
+    fetchSensorData();
   };
 
   const [sensorList, setSensorList] = useState<Array<Sensor> | null>(null);
+
+  const fetchSensorData = async () => {
+    try {
+      const response = await fetch(getServicesEndpoint);
+      const result: ApiResponse = await response.json();
+
+      const transformedData: {
+        measureAmount: string;
+        sensorType: SensorType | null;
+        name: string;
+        id: string;
+        type: DeviceType;
+      }[] = result.data.map((row) => ({
+        id: row[0],
+        name: row[1],
+        type: DeviceType.SENSOR,
+        sensorType: getSensorTypeFromString(row[3]),
+        measureAmount: row[4],
+      }));
+
+      setSensorList([...transformedData]);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   // Set initial configure props
   const [configureDialogProps, setConfigureDialogProps] =
@@ -41,36 +74,14 @@ function Sensors() {
       id: "",
       initialName: "",
       initialDeviceType: DeviceType.SENSOR,
-      initialMeasureType: null,
+      initialSensorType: null,
       initialMeasureAmount: "",
       onClose: handleCloseDialog,
     });
 
-  //TODO: Remove static sensors.
-  const initialSensors: Array<Sensor> = [
-    {
-      id: "1",
-      name: "Sensor 1",
-      measureType: MeasureType.TEMPERATURE_HUMIDITY,
-      measureAmount: "2",
-    },
-    {
-      id: "2",
-      name: "Sensor 2",
-      measureType: MeasureType.AIR_QUALITY,
-      measureAmount: "1",
-    },
-    {
-      id: "3",
-      name: "Sensor 3",
-      measureType: MeasureType.MOISTURE,
-      measureAmount: "1",
-    },
-  ];
-
   useEffect(() => {
     //TODO: Get sensor list from backend.
-    setSensorList(initialSensors);
+    fetchSensorData();
   }, []);
 
   const handleOpenConfigClick = (sensor: Sensor) => {
@@ -80,12 +91,12 @@ function Sensors() {
       id: sensor.id,
       initialName: sensor.name,
       initialDeviceType: DeviceType.SENSOR,
-      initialMeasureType: sensor.measureType,
+      initialSensorType: sensor.sensorType,
       initialMeasureAmount: sensor.measureAmount,
     }));
   };
 
-  const handleOpenDataClick = (sensorId: String) => {
+  const handleOpenDataClick = (sensorId: string) => {
     navigate(`/sensor-data/${sensorId}`);
   };
 
@@ -107,7 +118,7 @@ function Sensors() {
                   <b>ID</b>
                 </TableCell>
                 <TableCell align="left">
-                  <b>Measure Type</b>
+                  <b>Sensor Type</b>
                 </TableCell>
                 <TableCell align="left">
                   <b>Measure Amount</b>
@@ -124,7 +135,7 @@ function Sensors() {
                     {sensor.name}
                   </TableCell>
                   <TableCell align="left">{sensor.id}</TableCell>
-                  <TableCell align="left">{sensor.measureType}</TableCell>
+                  <TableCell align="left">{sensor.sensorType}</TableCell>
                   <TableCell align="left">{sensor.measureAmount}</TableCell>
                   <TableCell align="left">
                     <Button

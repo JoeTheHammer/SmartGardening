@@ -17,7 +17,7 @@ interface Measurement {
 }
 
 interface SensorDataPerMeasureValue {
-  measureValue: string; // Change this to the correct type
+  measure_value: string; // Change this to the correct type
   measurements: Measurement[];
 }
 
@@ -45,7 +45,7 @@ const SensorLineChart: React.FC<SensorLineChartProps> = ({ sensorData }) => {
           <XAxis dataKey="timestamp" tickFormatter={formatTimestamp} />
           <YAxis
             label={{
-              value: sensorData.measureValue,
+              value: sensorData.measure_value,
               angle: -90,
               position: "insideLeft",
             }}

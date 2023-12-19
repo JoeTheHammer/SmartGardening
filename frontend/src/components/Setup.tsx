@@ -64,7 +64,7 @@ function Setup() {
     id: selectedDeviceId, // Provide an empty string as a default value
     initialName: "",
     initialDeviceType: null,
-    initialMeasureType: null,
+    initialSensorType: null,
     initialMeasureAmount: "",
     onClose: handleCloseDialog,
   };

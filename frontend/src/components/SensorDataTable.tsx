@@ -1,5 +1,4 @@
 import React from "react";
-import { useEffect, useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -14,7 +13,7 @@ interface Measurement {
 }
 
 interface SensorDataPerMeasureValue {
-  measureValue: string; // Change this to the correct type
+  measure_value: string; // Change this to the correct type
   measurements: Measurement[];
 }
 
@@ -33,6 +32,8 @@ const formatTimestamp = (timestamp: Date) => {
   });
 };
 
+
+//TODO: Make the whole table as dropbox (auf und zu klappen)
 const SensorDataTable: React.FC<SensorLineChartProps> = ({ sensorData }) => {
   return (
     <>

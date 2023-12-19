@@ -12,12 +12,16 @@ import GroupWorkIcon from "@mui/icons-material/GroupWork";
 import DataThresholdingIcon from "@mui/icons-material/DataThresholding";
 import { Button } from "@mui/material";
 import { Settings } from "@mui/icons-material";
-import { DeviceType } from "../enums";
+import {DeviceType} from "../enums";
 import ConfigureDeviceDialog, {
   ConfigureDeviceDialogProps,
 } from "./ConfigureDeviceDialog";
 import GroupDialog, { GroupDialogProps } from "./GroupDialog";
 import ThresholdDialog, { ThresholdDialogProps } from "./ThresholdDialog";
+import {API_URL} from "../constants.ts";
+
+const getActuatorsEndpoint = API_URL + "/device/get_actuators";
+
 
 function Actuators() {
   interface Actuator {
@@ -26,9 +30,34 @@ function Actuators() {
     actionOn: boolean;
   }
 
+  interface ApiResponse {
+    data: Array<Array<string>>;
+  }
+
+  const fetchActuatorData = async () => {
+    try {
+      const response = await fetch(getActuatorsEndpoint);
+      const result: ApiResponse = await response.json();
+
+      const transformedData: { name: string; id: string; actionOn: string }[] = result.data.map((row) => ({
+        id: row[0],
+        name: row[1],
+        actionOn: row[5]
+      }));
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      setActuatorList([...transformedData]);
+
+      console.log(result);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+
   const handleCloseDialog = () => {
     setDialogOpen(false);
-
     setConfigureDialogProps((prevProps) => ({
       ...prevProps,
       open: false,
@@ -43,9 +72,15 @@ function Actuators() {
       ...prevProps,
       open: false,
     }));
+
+    fetchActuatorData();
+    if (isDialogOpen){
+      setDialogOpen(false);
+    }
   };
 
   const [actuatorList, setActuatorList] = useState<Array<Actuator>>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isDialogOpen, setDialogOpen] = useState(false);
 
   const [configureDialogProps, setConfigureDialogProps] =
@@ -54,7 +89,7 @@ function Actuators() {
       id: "",
       initialName: "",
       initialDeviceType: DeviceType.ACTUATOR,
-      initialMeasureType: null,
+      initialSensorType: null,
       initialMeasureAmount: "",
       onClose: handleCloseDialog,
     });
@@ -72,29 +107,11 @@ function Actuators() {
       onClose: handleCloseDialog,
     });
 
-  //TODO: Delete static data.
-  const initialActuators: Array<Actuator> = [
-    {
-      id: "1",
-      name: "Actuator 1",
-      actionOn: false,
-    },
-    {
-      id: "2",
-      name: "Actuator 2",
-      actionOn: false,
-    },
-    {
-      id: "3",
-      name: "Actuator 3",
-      actionOn: false,
-    },
-  ];
-
   useEffect(() => {
     //TODO: Load actuators from backend.
     //TODO: Load actuator status from "Command" table for button
-    setActuatorList(initialActuators);
+    fetchActuatorData();
+
   }, []);
 
   const handleConfigDialogClick = (actuator: Actuator) => {

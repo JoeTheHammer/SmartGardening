@@ -6,7 +6,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
 import DialogContentText from "@mui/material/DialogContentText";
-import { MeasureType } from "../enums";
+import { SensorType } from "../enums";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 
@@ -20,7 +20,7 @@ export interface GroupDialogProps {
 interface Sensor {
   id: string;
   name: string;
-  measureType: MeasureType;
+  sensorType: SensorType;
 }
 
 interface GroupData {
@@ -37,19 +37,13 @@ function GroupDialog(props: GroupDialogProps) {
   const [formName, setFormName] = useState<string>("");
   const [availableSensors, setAvailableSensors] = useState<Array<Sensor>>([]);
 
-  const initialGroupData: GroupData = {
-    actuatorId: "1",
-    name: "Group 1",
-    assignedSensors: [],
-  };
-
   const initialSensors: Array<Sensor> = [
-    { id: "1", name: "Sensor1", measureType: MeasureType.AIR_QUALITY },
-    { id: "2", name: "Sensor 2", measureType: MeasureType.MOISTURE },
+    { id: "1", name: "Sensor1", sensorType: SensorType.AIR_QUALITY },
+    { id: "2", name: "Sensor 2", sensorType: SensorType.MOISTURE },
     {
       id: "3",
       name: "Sensor 3",
-      measureType: MeasureType.TEMPERATURE_HUMIDITY,
+      sensorType: SensorType.TEMPERATURE_HUMIDITY,
     },
   ];
 
@@ -195,7 +189,7 @@ function GroupDialog(props: GroupDialogProps) {
                     }}
                   >
                     <div style={{ flex: 1 }}>
-                      <strong>{sensor.name}</strong> - {sensor.measureType}
+                      <strong>{sensor.name}</strong> - {sensor.sensorType}
                     </div>
                     <Button
                       variant="outlined"
@@ -220,7 +214,7 @@ function GroupDialog(props: GroupDialogProps) {
                   }}
                 >
                   <div style={{ flex: 1 }}>
-                    <strong>{sensor.name}</strong> - {sensor.measureType}
+                    <strong>{sensor.name}</strong> - {sensor.sensorType}
                   </div>
                   <Button
                     variant="outlined"

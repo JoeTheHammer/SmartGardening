@@ -3,6 +3,13 @@ import { MeasureValue } from "../enums";
 import { useEffect, useState } from "react";
 import SensorLineChart from "./SensorLineChart";
 import SensorDataTable from "./SensorDataTable";
+import {API_URL} from "../constants.ts";
+
+const measurementDataEndpoint = API_URL + "/measurement/get";
+
+interface ApiResponse {
+  data: Array<string | Array<string | null>>;
+}
 
 interface Measurement {
   timestamp: Date;
@@ -10,7 +17,7 @@ interface Measurement {
 }
 
 interface SensorDataPerMeasureValue {
-  measureValue: MeasureValue;
+  measure_value: MeasureValue;
   measurements: Measurement[];
 }
 
@@ -19,34 +26,18 @@ function SensorData() {
   const [sensorData, setSensorData] =
     useState<Array<SensorDataPerMeasureValue> | null>(null);
 
-  //TODO: Delete static data
-  const initialSensorData: Array<SensorDataPerMeasureValue> = [
-    {
-      measureValue: MeasureValue.TEMPERATURE,
-      measurements: [
-        { timestamp: new Date(new Date().getTime() - 19 * 60000), value: 22.9 },
-        { timestamp: new Date(new Date().getTime() - 18 * 60000), value: 22.4 },
-        { timestamp: new Date(new Date().getTime() - 17 * 60000), value: 21.2 },
-        { timestamp: new Date(new Date().getTime() - 16 * 60000), value: 22.0 },
-        { timestamp: new Date(new Date().getTime() - 15 * 60000), value: 23.9 },
-        { timestamp: new Date(new Date().getTime() - 14 * 60000), value: 23.8 },
-        { timestamp: new Date(new Date().getTime() - 13 * 60000), value: 25.2 },
-        { timestamp: new Date(new Date().getTime() - 12 * 60000), value: 21.5 },
-        { timestamp: new Date(new Date().getTime() - 11 * 60000), value: 20.3 },
-        { timestamp: new Date(new Date().getTime() - 10 * 60000), value: 20.5 },
-        { timestamp: new Date(new Date().getTime() - 9 * 60000), value: 22.7 },
-        { timestamp: new Date(new Date().getTime() - 8 * 60000), value: 21.7 },
-        { timestamp: new Date(new Date().getTime() - 7 * 60000), value: 22.1 },
-        { timestamp: new Date(new Date().getTime() - 6 * 60000), value: 23.3 },
-        { timestamp: new Date(new Date().getTime() - 5 * 60000), value: 23.5 },
-        { timestamp: new Date(new Date().getTime() - 4 * 60000), value: 25.3 },
-        { timestamp: new Date(new Date().getTime() - 3 * 60000), value: 21.0 },
-        { timestamp: new Date(new Date().getTime() - 2 * 60000), value: 20.4 },
-        { timestamp: new Date(new Date().getTime() - 1 * 60000), value: 20.2 },
-        { timestamp: new Date(new Date().getTime()), value: 24.9 },
-      ],
-    },
-  ];
+  const fetchMeasurementeData = async () => {
+    try {
+      const response = await fetch(measurementDataEndpoint);
+      const result: ApiResponse = await response.json();
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      setSensorData(result)
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   const getMostRecentValue = (
     measurements: Measurement[] | undefined
@@ -65,29 +56,28 @@ function SensorData() {
     return mostRecentMeasurement.value;
   };
 
-  const mostRecentValue = getMostRecentValue(
-    initialSensorData[0]?.measurements
-  );
-
   useEffect(() => {
     //TODO: Get sensor data from backend by sensor id.
-    setSensorData(initialSensorData);
+    fetchMeasurementeData();
   }, []);
 
   return (
-    <>
-      <h2 className="text-center">Data of Sensor {sensorId}</h2>
-      {sensorData && (
-        //TODO: Render this based on amount of sensors
-        <>
-          <h5 className="text-center">
-            {sensorData[0].measureValue}: Current Value: {mostRecentValue}
-          </h5>
-          <SensorLineChart sensorData={sensorData[0]} />
-          <SensorDataTable sensorData={sensorData[0]} />
-        </>
-      )}
-    </>
+      <>
+        <h2 className="text-center">Data of Sensor {sensorId}</h2>
+        {sensorData && (
+            <>
+              {sensorData.map((currentSensorData) => (
+                  <div key={currentSensorData.measure_value}>
+                    <h5 className="text-center">
+                      {currentSensorData.measure_value}: Current Value: {getMostRecentValue(currentSensorData.measurements)}
+                    </h5>
+                    <SensorLineChart sensorData={currentSensorData} />
+                    <SensorDataTable sensorData={currentSensorData} />
+                  </div>
+              ))}
+            </>
+        )}
+      </>
   );
 }
 

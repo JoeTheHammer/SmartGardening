@@ -1,4 +1,4 @@
-export enum MeasureType {
+export enum SensorType {
   TEMPERATURE_HUMIDITY = "Temperature/Humidity",
   AIR_QUALITY = "AirQuality",
   MOISTURE = "Moisture",
@@ -16,10 +16,13 @@ export enum DeviceType {
   ACTUATOR = "Actuator"
 }
 
-export function getMeasureTypeFromString(str: string): MeasureType | null {
-  for (const key in MeasureType) {
-    if (MeasureType[key as keyof typeof MeasureType] === str) {
-      return MeasureType[key as keyof typeof MeasureType];
+export function getSensorTypeFromString(str: string | null): SensorType | null {
+  if (str === null){
+    return null;
+  }
+  for (const key in SensorType) {
+    if (SensorType[key as keyof typeof SensorType] === str) {
+      return SensorType[key as keyof typeof SensorType];
     }
   }
   return null;

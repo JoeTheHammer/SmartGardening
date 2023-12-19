@@ -6,7 +6,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import MenuItem from "@mui/material/MenuItem";
-import { MeasureType, DeviceType } from "../enums";
+import { SensorType, DeviceType } from "../enums";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import InputLabel from "@mui/material/InputLabel";
 import Box from "@mui/material/Box";
@@ -18,20 +18,23 @@ export interface ConfigureDeviceDialogProps {
   id: string | null;
   initialName: string;
   initialDeviceType: DeviceType | null;
-  initialMeasureType: MeasureType | null;
+  initialSensorType: SensorType | null;
   initialMeasureAmount: string;
 
   onClose: (value: string) => void;
 }
 
 function ConfigureDeviceDialog(props: ConfigureDeviceDialogProps) {
+
+  //TODO: Change to Setup Dialog, create new Configure Dialog where only Name can be changed or device can be deleted.
+
   // Get props from parent component.
   const {
     open,
     id,
     initialName,
     initialDeviceType,
-    initialMeasureType,
+    initialSensorType,
     initialMeasureAmount,
     onClose,
   } = props;
@@ -39,7 +42,7 @@ function ConfigureDeviceDialog(props: ConfigureDeviceDialogProps) {
   // Set variables with state.
   const [name, setName] = useState("");
   const [deviceType, setDeviceType] = useState<DeviceType | null>(null);
-  const [measureType, setMeasureType] = useState<MeasureType | null>(null);
+  const [sensorType, setSensorType] = useState<SensorType | null>(null);
   const [measureAmount, setMeasureAmount] = useState<string>("");
 
   // Initialize data, use data that was given from parent component.
@@ -48,7 +51,7 @@ function ConfigureDeviceDialog(props: ConfigureDeviceDialogProps) {
       console.log("INIT CONFIG DIALOG!");
       setName(initialName);
       setDeviceType(initialDeviceType);
-      setMeasureType(initialMeasureType);
+      setSensorType(initialSensorType);
       setMeasureAmount(initialMeasureAmount);
     }
   }, [open]);
@@ -60,10 +63,10 @@ function ConfigureDeviceDialog(props: ConfigureDeviceDialogProps) {
 
   // Send value to backend.
   const handleSave = async () => {
-    var sendName = null;
-    var sendDeviceType = null;
-    var sendMeasureType = null;
-    var sendMeasureAmount = null;
+    let sendName = null;
+    let sendDeviceType = null;
+    let sendSensorType = null;
+    let sendMeasureAmount = null;
 
     if (name !== null) {
       sendName = name;
@@ -74,8 +77,8 @@ function ConfigureDeviceDialog(props: ConfigureDeviceDialogProps) {
     }
 
     if (deviceType != null && deviceType === DeviceType.SENSOR) {
-      if (measureType != null) {
-        sendMeasureType = measureType.toString();
+      if (sensorType != null) {
+        sendSensorType = sensorType.toString();
       }
       if (measureAmount != null) {
         sendMeasureAmount = measureAmount.toString();
@@ -92,7 +95,7 @@ function ConfigureDeviceDialog(props: ConfigureDeviceDialogProps) {
           id: id,
           name: sendName,
           deviceType: sendDeviceType,
-          measureType: sendMeasureType,
+          sensorType: sendSensorType,
           measureAmount: sendMeasureAmount,
         }),
       });
@@ -121,10 +124,10 @@ function ConfigureDeviceDialog(props: ConfigureDeviceDialogProps) {
     setDeviceType(event.target.value as DeviceType);
   };
 
-  const handleMeasureTypeChange = (
+  const handleSensorTypeChange = (
     event: SelectChangeEvent<string> // Update the type to SelectChangeEvent<string>
   ) => {
-    setMeasureType(event.target.value as MeasureType);
+    setSensorType(event.target.value as SensorType);
   };
 
   const handleMeasureAmountChange = (
@@ -176,18 +179,18 @@ function ConfigureDeviceDialog(props: ConfigureDeviceDialogProps) {
                 {/* Separate sections with spacing using Box */}
               </Box>
               <InputLabel id="measure-type-select-label">
-                Measure Type
+                Sensor Type
               </InputLabel>
               <Select
                 labelId="measure-type-select-label"
                 id="measure-type-select"
-                value={measureType ? measureType.toString() : ""}
-                label="Measure Type"
-                onChange={handleMeasureTypeChange}
+                value={sensorType ? sensorType.toString() : ""}
+                label="Sensor Type"
+                onChange={handleSensorTypeChange}
                 fullWidth
                 variant="standard"
               >
-                {Object.values(MeasureType).map((type) => (
+                {Object.values(SensorType).map((type) => (
                   <MenuItem key={type} value={type}>
                     {type}
                   </MenuItem>
