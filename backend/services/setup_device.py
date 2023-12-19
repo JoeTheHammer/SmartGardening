@@ -76,6 +76,9 @@ def modify_device_info():
                 WhERE id = ? 
             ''',(name, device_type, sensor_type, measure_amount, id))
         conn.commit()
+        if device_type == "Actuator":
+            cursor.execute('''UPDATE action_status SET id=?, status=?''',(id, 0))
+            conn.commit()
         conn.close()
 
         return jsonify({'message': 'OK'}), 201

@@ -27,6 +27,16 @@ def get_actuator_task():
 @app.route('/api/actuator/update_task', methods=['POST'])
 def update_actuator_task():
     try:
+        data = request.get_json()
+        id = data['id']
+        status = data['status']
+
+        conn = sqlite3.connect('smart_gardening_db.db')
+        cursor = conn.cursor()
+        cursor.execute('''UPDATE action_status SET id=?, status=?''',(id, status))
+        conn.commit()
+        conn.close()
+        
         return jsonify({'message': 'OK'}), 200
     
     except Exception as e:

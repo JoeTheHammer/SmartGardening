@@ -17,14 +17,15 @@ def report():
     try:
         data = request.get_json()
         device_id = data['id']
-        value = data['value'].split(";")
+        value = str(data['value']).split(";")
 
         conn = sqlite3.connect('smart_gardening_db.db')
         cursor = conn.cursor()
         cursor.execute('SELECT sensor_type FROM device WHERE id = ?', (device_id,))
         conn.commit()
         data = cursor.fetchall()
-        if len(data) == 0:
+
+        if data[0][0] is None:
             conn.close()
             return '', 404
 
@@ -33,14 +34,18 @@ def report():
         sensor_types = data[0][0].split("/")
         for sensor_type in sensor_types:
             cursor.execute('INSERT INTO measurement (sensor_id, value, measure_type) VALUES(?, ?, ?)', (device_id, value[counter], sensor_type))
+            conn.commit()
             counter += 1
-        conn.commit()
         conn.close()
 
         return jsonify({'message': 'OK'}), 201
-
+    
+    except AttributeError:
+        logging.debug("Atrribute error in API call '/api/measurement/report'")
+        return '', 422
+    
     except Exception as e:
-        print(e)
+        logging.error(f"Error in API call '/api/measurement/report':\n{str(e)}")
         return jsonify({'error': str(e)}), 500
 
 
@@ -57,28 +62,31 @@ def get_measurement():
     try:
         #data = request.get_json()
         #id = data['id']
-        id = "349454219c58"
+        id = "jor78jn453"
         conn = sqlite3.connect('smart_gardening_db.db')
         cursor = conn.cursor()
-        cursor.execute('''SELECT measure_type FROM measurement WHERE sensor_id=?''', (id,))
+        cursor.execute('''SELECT DISTINCT measure_type FROM measurement WHERE sensor_id=?''', (id,))
         conn.commit()
         data = cursor.fetchall()
 
-        response = {}
-        for d in data[0]:
-            print(d)
-            cursor.execute('''SELECT timestamp, value FROM measurement WHERE sensor_id=? AND measure_type=?''', (id, d))
+        response = []
+        for i in range(0, len(data)):
+            cursor.execute('''SELECT timestamp, value FROM measurement WHERE sensor_id=? AND measure_type=?''', (id, data[i][0]))
             conn.commit()
             values = cursor.fetchall()
 
-            response['measure_value'] = d
-            response['measurements'] = []
+            measurements_array = []
             for value in values:
-                print(value)
-                response['measurements'].append({'timestamp': value[0], 'value': value[1]})
+                measurements_array.append({'timestamp': value[0], 'value': value[1]})
 
+            response.append({'measure_value': data[i][0], 'measurements': measurements_array})
 
         conn.close()
         return jsonify(response), 200
+    
+    except AttributeError:
+        logging.debug("Atrribute error in API call '/api/measurement/get'")
+        return '', 422
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500

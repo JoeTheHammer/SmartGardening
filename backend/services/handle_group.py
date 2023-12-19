@@ -28,6 +28,7 @@ def get_group():
         else: cursor.execute('''SELECT name FROM actuator_group WHERE actuator_id=(?)''', (actuator,))
         conn.commit()
         data = cursor.fetchall()
+        conn.close()
         return jsonify({'message': data}), 200
     
     except Exception as e:
@@ -39,6 +40,19 @@ def get_group():
 @app.route('/api/group/update', methods=['POST'])
 def update_group():
     try:
+        data = request.get_json()
+        actuator_id = data['actuator_id']
+        sensor_id = data['sensor_id']
+        group_name = data['group_name']
+
+        conn = sqlite3.connect('smart_gardening_db.db')
+        cursor = conn.cursor()
+        cursor.execute('''
+                UPDATE actuator_group
+                SET sensor_id = ?, actuator_id = ?, name = ?
+            ''',(sensor_id, actuator_id, group_name,))
+        conn.commit()
+        conn.close()
         return jsonify({'message': 'OK'}), 200
     
     except Exception as e:
