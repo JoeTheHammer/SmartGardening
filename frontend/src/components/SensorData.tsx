@@ -5,7 +5,7 @@ import SensorLineChart from "./SensorLineChart";
 import SensorDataTable from "./SensorDataTable";
 import {API_URL} from "../constants.ts";
 
-const measurementDataEndpoint = API_URL + "/measurement/get";
+const measurementDataEndpoint = API_URL + "/measurement/request";
 
 interface ApiResponse {
   data: Array<string | Array<string | null>>;
@@ -26,9 +26,19 @@ function SensorData() {
   const [sensorData, setSensorData] =
     useState<Array<SensorDataPerMeasureValue> | null>(null);
 
+
+
   const fetchMeasurementeData = async () => {
     try {
-      const response = await fetch(measurementDataEndpoint);
+      const response = await fetch(measurementDataEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: sensorId,
+        }),
+      });
       const result: ApiResponse = await response.json();
 
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment

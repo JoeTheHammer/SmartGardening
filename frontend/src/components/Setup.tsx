@@ -6,9 +6,9 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import { Settings, Refresh } from "@mui/icons-material";
 import { useEffect, useState } from "react";
-import ConfigureDeviceDialog, {
-  ConfigureDeviceDialogProps,
-} from "./ConfigureDeviceDialog";
+import SetupDeviceDialog, {
+  SetupDeviceDialogProps,
+} from "./SetupDeviceDialog.tsx";
 import { API_URL } from "../constants";
 
 interface ApiResponse {
@@ -59,7 +59,7 @@ function Setup() {
     refreshList(); //Refresh page after it was closed
   };
 
-  const configureDialogProps: ConfigureDeviceDialogProps = {
+  const configureDialogProps: SetupDeviceDialogProps = {
     open: isDialogOpen,
     id: selectedDeviceId, // Provide an empty string as a default value
     initialName: "",
@@ -82,7 +82,7 @@ function Setup() {
       >
         {newDevices === null || newDevices.length == 0 ? (
           <div>
-            <h3 className="text-center">No new devices available!</h3>
+            <h4 className="text-center">No new devices available!</h4>
           </div>
         ) : (
           <></>
@@ -118,7 +118,7 @@ function Setup() {
           </List>
         </Box>
       </div>
-      <ConfigureDeviceDialog {...configureDialogProps} />
+      <SetupDeviceDialog {...configureDialogProps} />
     </>
   );
 }

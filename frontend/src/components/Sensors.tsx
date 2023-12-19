@@ -9,11 +9,9 @@ import Paper from "@mui/material/Paper";
 import { Button } from "@mui/material";
 import { Settings, ShowChart } from "@mui/icons-material";
 import { SensorType, DeviceType, getSensorTypeFromString } from "../enums";
-import ConfigureDeviceDialog, {
-  ConfigureDeviceDialogProps,
-} from "./ConfigureDeviceDialog";
 import { useNavigate } from "react-router-dom";
 import { API_URL } from "../constants";
+import ConfigDeviceDialog, {ConfigureDeviceDialogProps} from "./ConfigDeviceDialog.tsx";
 
 const getServicesEndpoint = API_URL + "/device/get_sensors";
 
@@ -165,7 +163,7 @@ function Sensors() {
           There are no sensors known to the system.
         </h4>
       )}
-      <ConfigureDeviceDialog {...configureDialogProps} />
+      <ConfigDeviceDialog {...configureDialogProps} />
     </>
   );
 }

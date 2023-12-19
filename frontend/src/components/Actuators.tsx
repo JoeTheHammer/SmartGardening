@@ -13,12 +13,10 @@ import DataThresholdingIcon from "@mui/icons-material/DataThresholding";
 import { Button } from "@mui/material";
 import { Settings } from "@mui/icons-material";
 import {DeviceType} from "../enums";
-import ConfigureDeviceDialog, {
-  ConfigureDeviceDialogProps,
-} from "./ConfigureDeviceDialog";
 import GroupDialog, { GroupDialogProps } from "./GroupDialog";
 import ThresholdDialog, { ThresholdDialogProps } from "./ThresholdDialog";
 import {API_URL} from "../constants.ts";
+import ConfigDeviceDialog, {ConfigureDeviceDialogProps} from "./ConfigDeviceDialog.tsx";
 
 const getActuatorsEndpoint = API_URL + "/device/get_actuators";
 
@@ -235,10 +233,10 @@ function Actuators() {
         </TableContainer>
       ) : (
         <h4 className="text-center">
-          There are no Acutators known to the system.
+          There are no actuators known to the system.
         </h4>
       )}
-      <ConfigureDeviceDialog {...configureDialogProps} />
+      <ConfigDeviceDialog {...configureDialogProps} />
       <GroupDialog {...groupDialogProps} />
       <ThresholdDialog {...thresholdDialogProps} />
     </>

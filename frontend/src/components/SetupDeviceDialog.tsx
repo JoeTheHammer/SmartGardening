@@ -13,18 +13,17 @@ import Box from "@mui/material/Box";
 import { API_URL } from "../constants";
 
 // Interface definition for this component.
-export interface ConfigureDeviceDialogProps {
+export interface SetupDeviceDialogProps {
   open: boolean;
   id: string | null;
   initialName: string;
   initialDeviceType: DeviceType | null;
   initialSensorType: SensorType | null;
   initialMeasureAmount: string;
-
   onClose: (value: string) => void;
 }
 
-function ConfigureDeviceDialog(props: ConfigureDeviceDialogProps) {
+function SetupDeviceDialog(props: SetupDeviceDialogProps) {
 
   //TODO: Change to Setup Dialog, create new Configure Dialog where only Name can be changed or device can be deleted.
 
@@ -226,4 +225,4 @@ function ConfigureDeviceDialog(props: ConfigureDeviceDialogProps) {
   );
 }
 
-export default ConfigureDeviceDialog;
+export default SetupDeviceDialog;
