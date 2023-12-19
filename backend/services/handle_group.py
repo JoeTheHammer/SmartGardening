@@ -13,7 +13,7 @@ from __main__ import app
 
 
 # API entrypoint that gets called to retrieve all groups and if an actuator is specified filter by the actuator
-@app.route('/api/group/get', methods=['GET'])
+@app.route('/api/group/request', methods=['POST'])
 def get_group():
     try:
         data = request.get_json()
@@ -32,7 +32,7 @@ def get_group():
         return jsonify({'message': data}), 200
     
     except Exception as e:
-        logging.error(f"Error in API call '/api/group/get':\n{str(e)}")
+        logging.error(f"Error in API call '/api/group/request':\n{str(e)}")
         return jsonify({'error': str(e)}), 500
 
 

@@ -31,7 +31,6 @@ def get_actuators():
         cursor.execute('SELECT * FROM device WHERE type="Actuator"')
         conn.commit()
         data = cursor.fetchall()
-        
         for i in range(0, len(data)):
             actuator_id = data[i][0]
             cursor.execute('SELECT status FROM action_status WHERE id=?', (actuator_id,))

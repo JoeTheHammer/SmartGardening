@@ -76,8 +76,13 @@ def modify_device_info():
                 WhERE id = ? 
             ''',(name, device_type, sensor_type, measure_amount, id))
         conn.commit()
+
         if device_type == "Actuator":
-            cursor.execute('''UPDATE action_status SET id=?, status=?''',(id, 0))
+            cursor.execute('''SELECT status FROM action_status WHERE id=?''',(id, ))
+            conn.commit()
+            if(len(cursor.fetchall()) == 0):
+                cursor.execute('''INSERT INTO action_status(id) VALUES(?)''',(id, ))
+            cursor.execute('''UPDATE action_status SET status=? WHERE id=?''',(0, id, ))
             conn.commit()
         conn.close()
 
