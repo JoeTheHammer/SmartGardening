@@ -15,12 +15,12 @@ from __main__ import app
 def register():
     try:
         data = request.get_json()
-        incoming_id = data['id']
+        device_id = data['id']
 
         #check if device already exists in the DB
         conn = sqlite3.connect('smart_gardening_db.db')
         cursor = conn.cursor()
-        cursor.execute('''SELECT id FROM device WHERE id=(?)''', (incoming_id,))
+        cursor.execute('''SELECT id FROM device WHERE id=(?)''', (device_id,))
         conn.commit()
         data = cursor.fetchall()
         if len(data) != 0:
@@ -28,7 +28,7 @@ def register():
             return jsonify({'message': 'OK'}), 200
         
         #add new device id to the table and return http status created to client
-        cursor.execute('INSERT INTO device (id) VALUES (?)', (incoming_id,))
+        cursor.execute('INSERT INTO device (id) VALUES (?)', (device_id,))
         conn.commit()
         conn.close()
         return jsonify({'message': 'Data added successfully'}), 201
@@ -65,16 +65,16 @@ def modify_device_info():
         id = received_data['id']
         name = received_data['name']
         device_type = received_data['deviceType']
-        measure_type = received_data['measureType']
+        sensor_type = received_data['sensorType']
         measure_amount = received_data['measureAmount']
 
         conn = sqlite3.connect('smart_gardening_db.db')
         cursor = conn.cursor()
         cursor.execute('''
                 UPDATE device
-                SET name = ?, type = ?, measure_type = ?, measure_amount = ?
+                SET name = ?, type = ?, sensor_type = ?, measure_amount = ?
                 WhERE id = ? 
-            ''',(name, device_type, measure_type, measure_amount, id))
+            ''',(name, device_type, sensor_type, measure_amount, id))
         conn.commit()
         conn.close()
 

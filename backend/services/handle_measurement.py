@@ -15,27 +15,30 @@ from __main__ import app
 @app.route('/api/measurement/report', methods=['POST'])
 def report():
     try:
+        data = request.get_json()
+        device_id = data['id']
+        value = data['value'].split(";")
 
-        print(request.headers)
-        print(f"Received: {request.get_json()}")
+        conn = sqlite3.connect('smart_gardening_db.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT sensor_type FROM device WHERE id = ?', (device_id,))
+        conn.commit()
+        data = cursor.fetchall()
+        if len(data) == 0:
+            conn.close()
+            return '', 404
+
+        #data[0][0] gets the type of sensor
+        counter = 0
+        sensor_types = data[0][0].split("/")
+        for sensor_type in sensor_types:
+            cursor.execute('INSERT INTO measurement (sensor_id, value, measure_type) VALUES(?, ?, ?)', (device_id, value[counter], sensor_type))
+            counter += 1
+        conn.commit()
+        conn.close()
 
         return jsonify({'message': 'OK'}), 201
 
-        # conn = sqlite3.connect('smart_gardening_db.db')
-        # cursor = conn.cursor()
-
-        # cursor.execute('SELECT measure_type FROM device WHERE MAC = ?', (mac,))
-
-        # data = cursor.fetchall()
-        # measure_type = data[0][0]
-
-        # print(measure_type)
-
-        # cursor.execute('INSERT INTO measurement (mac, value, measure_type) VALUES (?,?,?)', (mac, value, measure_type))
-        # conn.commit()
-        # conn.close()
-
-        # return jsonify({'message': 'Data added successfully'}), 201
     except Exception as e:
         print(e)
         return jsonify({'error': str(e)}), 500
@@ -52,12 +55,30 @@ def report():
 @app.route('/api/measurement/get', methods=['GET'])
 def get_measurement():
     try:
+        #data = request.get_json()
+        #id = data['id']
+        id = "349454219c58"
         conn = sqlite3.connect('smart_gardening_db.db')
         cursor = conn.cursor()
-        cursor.execute('SELECT * FROM measurement')
+        cursor.execute('''SELECT measure_type FROM measurement WHERE sensor_id=?''', (id,))
+        conn.commit()
         data = cursor.fetchall()
-        conn.close()
 
-        return jsonify({'data': data}), 200
+        response = {}
+        for d in data[0]:
+            print(d)
+            cursor.execute('''SELECT timestamp, value FROM measurement WHERE sensor_id=? AND measure_type=?''', (id, d))
+            conn.commit()
+            values = cursor.fetchall()
+
+            response['measure_value'] = d
+            response['measurements'] = []
+            for value in values:
+                print(value)
+                response['measurements'].append({'timestamp': value[0], 'value': value[1]})
+
+
+        conn.close()
+        return jsonify(response), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
