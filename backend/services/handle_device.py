@@ -49,7 +49,7 @@ def get_actuators():
 
 
 # API endpoint for deleting a device
-@app.route('/api/device/delete', methods=['GET'])
+@app.route('/api/device/delete', methods=['DELETE'])
 def delete_sensors():
     try:
         data = request.get_json()
@@ -65,7 +65,7 @@ def delete_sensors():
         conn.commit()
         conn.close()
 
-        return jsonify({'message': 'OK'}), 201
+        return jsonify({'message': 'OK'}), 200
     
     except AttributeError:
         logging.debug("Atrribute error in API call '/api/measurement/get'")
