@@ -19,8 +19,9 @@ export interface ConfigureDeviceDialogProps {
   onClose: (value: string) => void;
 }
 
-function ConfigDeviceDialog(props: ConfigureDeviceDialogProps) {
+//TODO: Add value in seconds in which interval the sensor sends
 
+function ConfigDeviceDialog(props: ConfigureDeviceDialogProps) {
   // Get props from parent component.
   const {
     open,
@@ -153,12 +154,8 @@ function ConfigDeviceDialog(props: ConfigureDeviceDialogProps) {
             value={name}
             onChange={handleNameChange}
           />
-
         </DialogContent>
-        <Button
-            style={{ width: "100%" }}
-            onClick={handleDeleteDevice}
-        >
+        <Button style={{ width: "100%" }} onClick={handleDeleteDevice}>
           Delete Device
         </Button>
         <DialogActions>

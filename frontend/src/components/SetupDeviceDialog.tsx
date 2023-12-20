@@ -24,9 +24,7 @@ export interface SetupDeviceDialogProps {
 }
 
 function SetupDeviceDialog(props: SetupDeviceDialogProps) {
-
-  //TODO: Change to Setup Dialog, create new Configure Dialog where only Name can be changed or device can be deleted.
-
+  //TODO: Add value in seconds in which interval the sensor sends
   // Get props from parent component.
   const {
     open,
