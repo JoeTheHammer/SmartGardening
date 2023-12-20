@@ -10,7 +10,7 @@ from __main__ import app
 # Also it provides a way to receive the stored data from the DB.
 # The API starts with '/api/measurement/<service_name>'
 
-
+# TODO: return time for next sensor update after a sensor successfully transmitted data
 # API endpoint for sending masurement data
 @app.route('/api/measurement/report', methods=['POST'])
 def report():
