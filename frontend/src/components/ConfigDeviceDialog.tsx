@@ -7,6 +7,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { SensorType, DeviceType } from "../enums";
 import { API_URL } from "../constants";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 // Interface definition for this component.
 export interface ConfigureDeviceDialogProps {
@@ -131,6 +132,7 @@ function ConfigDeviceDialog(props: ConfigureDeviceDialogProps) {
           deviceType: sendDeviceType,
           sensorType: sendSensorType,
           measureAmount: sendMeasureAmount,
+          updateInterval: 2000 //TODO: Remove hardcoded version
         }),
       });
 
@@ -163,8 +165,11 @@ function ConfigDeviceDialog(props: ConfigureDeviceDialogProps) {
                 onChange={handleNameChange}
             />
           </DialogContent>
-          <Button style={{ width: "100%" }} onClick={handleDeleteConfirmationOpen}>
-            Delete Device
+          <Button
+              startIcon={<DeleteIcon />}
+              color="error"
+              onClick={handleDeleteConfirmationOpen}
+          >            Delete Device
           </Button>
           {/* Delete Confirmation Dialog */}
           <Dialog open={deleteConfirmationOpen} onClose={handleDeleteConfirmationClose}>
@@ -174,7 +179,7 @@ function ConfigDeviceDialog(props: ConfigureDeviceDialogProps) {
             </DialogContent>
             <DialogActions>
               <Button onClick={handleDeleteConfirmationClose}>Cancel</Button>
-              <Button onClick={handleDeleteDevice} color="error">
+              <Button onClick={handleDeleteDevice} color="error" startIcon={<DeleteIcon />}>
                 Delete
               </Button>
             </DialogActions>

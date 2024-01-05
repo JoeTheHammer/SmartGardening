@@ -30,14 +30,11 @@ function SensorData() {
 
   const fetchMeasurementData = async () => {
     try {
-      const response = await fetch(measurementDataEndpoint, {
-        method: "POST",
+      const response = await fetch(`${measurementDataEndpoint}/${sensorId}`, {
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          id: sensorId,
-        }),
       });
       const result: ApiResponse = await response.json();
 

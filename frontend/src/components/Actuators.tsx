@@ -152,6 +152,8 @@ function Actuators() {
     }));
   };
 
+  //TODO: Show update interval
+
   return (
     <>
       <h2 className="text-center">Actuators</h2>

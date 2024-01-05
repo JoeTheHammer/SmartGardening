@@ -97,6 +97,8 @@ function Sensors() {
     navigate(`/sensor-data/${sensorId}`);
   };
 
+  //TODO: Show update interval
+
   return (
     <>
       <h2 className="text-center">Sensors</h2>

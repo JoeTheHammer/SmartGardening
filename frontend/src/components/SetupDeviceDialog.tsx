@@ -24,8 +24,7 @@ export interface SetupDeviceDialogProps {
 }
 
 function SetupDeviceDialog(props: SetupDeviceDialogProps) {
-  //TODO: Add value in seconds in which interval the sensor sends
-  // Get props from parent component.
+  
   const {
     open,
     id,
@@ -94,6 +93,7 @@ function SetupDeviceDialog(props: SetupDeviceDialogProps) {
           deviceType: sendDeviceType,
           sensorType: sendSensorType,
           measureAmount: sendMeasureAmount,
+          updateInterval: 2000, //TODO: Remove hardcoded version
         }),
       });
 
@@ -151,6 +151,7 @@ function SetupDeviceDialog(props: SetupDeviceDialogProps) {
           <Box mt={2} mb={2}>
             {/* Separate sections with spacing using Box */}
           </Box>
+
           <InputLabel id="device-type-select-label">Device Type</InputLabel>
           <Select
             labelId="device-type-select-label"
