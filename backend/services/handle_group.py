@@ -103,7 +103,7 @@ def delete_group():
 #TODO: Add SQL for removing the sensor from the group
 # API entrypoint that deletes a group 
 @app.route('/api/group/sensor/delete', methods=['DELETE'])
-def delete_group():
+def delete__sensor_from_group():
     try:
         data = request.get_json()
         group_name = data['groupName']
