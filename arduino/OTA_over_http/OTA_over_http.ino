@@ -145,7 +145,7 @@ void sendJsonPost(const char* server, const int port, String path, String postDa
 
 void sendRegisterDevicePost(const char* server, const int port, String macString){
   String result = "";
-  sendJsonPost(server, port, "/api/device/register", getJsonDataRegister(macString), &result);
+  sendJsonPost(server, port, REGISTER_PATH, getJsonDataRegister(macString), &result);
   Serial.println(result);
 }
 

@@ -24,6 +24,7 @@ def report():
         cursor.execute('SELECT sensor_type FROM device WHERE id = ?', (device_id,))
         conn.commit()
         data = cursor.fetchall()
+        print(data)
 
         if data[0][0] is None:
             conn.close()
@@ -38,7 +39,7 @@ def report():
             counter += 1
         conn.close()
 
-        return jsonify({'message': 'OK'}), 201
+        return jsonify({'message': 'OK', 'sleep': 20000}), 201
     
     except AttributeError:
         logging.debug("Atrribute error in API call '/api/measurement/report'")

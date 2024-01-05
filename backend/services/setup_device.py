@@ -1,3 +1,4 @@
+import base64
 import logging
 import sqlite3
 
@@ -92,8 +93,46 @@ def modify_device_info():
     except Exception as e:
         logging.error(f"Error in API call '/api/device/modify_info':\n{str(e)}")
         return jsonify({'error': str(e)}), 500
-    
+
+
 @app.route('/api/device/update/<device_id>', methods=['GET'])
 def get_device_update(device_id):
-    data = open("C:\\Users\\luca\\Desktop\\update.bin", 'rb').read()
-    return data, 200
+    try:
+        conn = sqlite3.connect('smart_gardening_db.db')
+        cursor = conn.cursor()
+
+        cursor.execute('''SELECT type FROM device WHERE id=?''', (device_id,))
+        conn.commit()
+        
+        device_type = cursor.fetchall()[0][0]
+
+        if device_type == "Actuator":
+            print("GET Actuator image")
+            return '', 200
+    
+        cursor.execute('''SELECT sensor_type FROM device WHERE id=?''', (device_id,))
+        conn.commit()
+        sensor_type = cursor.fetchall()[0][0]
+        print(f"GET sensor_type image of {sensor_type}")
+
+        cursor.execute('''SELECT img_data FROM images WHERE id=?''', (sensor_type,))
+        conn.commit()
+        data_enc = cursor.fetchall()[0][0]
+        data = base64.b64decode(data_enc)
+        conn.close()
+        return data, 200
+    
+    #this only triggers if the device has been deleted
+    except IndexError:
+        conn = sqlite3.connect('smart_gardening_db.db')
+        cursor = conn.cursor()
+        cursor.execute('''SELECT img_data FROM images WHERE id="default"''')
+        conn.commit()
+        data_enc = cursor.fetchall()[0][0]
+        data = base64.b64decode(data_enc)
+        conn.close()
+        return data, 200
+
+    except Exception as e:
+        logging.error(f"Error in API call '/api/device/update/{device_id}':\n{str(e)}")
+        return jsonify({'error': str(e)}), 500

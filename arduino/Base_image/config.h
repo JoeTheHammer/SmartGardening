@@ -1,9 +1,12 @@
-//config for local AP
-const char AP_SSID[] = "MKR1010";
-const char AP_PASS[] = "123456789";
+//local config
+const int DEFAULT_DELAY = 10000;
 
+//config of network
+const char SSID[] = "Vodafone-C02030120";
+const char PASS[] = "pEyK4khRrLGC6NZr";
 
 //config rest API
+const char* API_SERVER_IP = "192.168.1.7";
 const int API_SERVER_PORT = 5000;
 const unsigned long UPDATE_CHECK_INTERVAL = 6000;
 
