@@ -69,14 +69,15 @@ def modify_device_info():
         device_type = received_data['deviceType']
         sensor_type = received_data['sensorType']
         measure_amount = received_data['measureAmount']
+        update_interval = received_data['updateInterval']
 
         conn = sqlite3.connect('smart_gardening_db.db')
         cursor = conn.cursor()
         cursor.execute('''
                 UPDATE device
-                SET name = ?, type = ?, sensor_type = ?, measure_amount = ?
+                SET name = ?, type = ?, sensor_type = ?, measure_amount = ?, update_interval = ?
                 WhERE id = ? 
-            ''',(name, device_type, sensor_type, measure_amount, id))
+            ''',(name, device_type, sensor_type, measure_amount, update_interval, id, ))
         conn.commit()
 
         if device_type == "Actuator":

@@ -28,7 +28,7 @@ def delete_database(sql_db_path: str):
 # This should be only called on the first start of the server
 def setup_database(sql_db_path:str):
     sql_queries = [
-        '''CREATE TABLE IF NOT EXISTS device (id STRING PRIMARY KEY, name TEXT, type TEXT, sensor_type TEXT, measure_amount INTEGER)''',
+        '''CREATE TABLE IF NOT EXISTS device (id STRING PRIMARY KEY, name TEXT, type TEXT, sensor_type TEXT, measure_amount INT, update_interval INT)''',
         '''CREATE TABLE IF NOT EXISTS measurement (sensor_id STRING, timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, value REAL, measure_type TEXT, PRIMARY KEY (sensor_id, timestamp, measure_type))''',
         '''CREATE TABLE IF NOT EXISTS actuator_group (sensor_id STRING, actuator_id STRING, name STRING, PRIMARY KEY (sensor_id, actuator_id))''',
         '''CREATE TABLE IF NOT EXISTS threshold (id STRING, measure_type TEXT, value REAL, PRIMARY KEY (id, measure_type, value))''',

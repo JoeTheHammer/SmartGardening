@@ -13,13 +13,13 @@ from __main__ import app
 
 
 # API entry to check if an actuator has to perform a task
-@app.route('/api/actuator/get_task', methods=['GET'])
-def get_actuator_task():
+@app.route('/api/actuator/get_task/<actuator_id>', methods=['GET'])
+def get_actuator_task(actuator_id):
     try:
         return jsonify({'message': 'OK'}), 200
     
     except Exception as e:
-        logging.error(f"Error in API call '/api/actuator/get_task':\n{str(e)}")
+        logging.error(f"Error in API call '/api/actuator/get_task/{actuator_id}':\n{str(e)}")
         return jsonify({'error': str(e)}), 500
 
 

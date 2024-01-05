@@ -11,13 +11,13 @@ from __main__ import app
 
 
 # API entrypoint that retrieves the threshold based on the actuator
-@app.route('/api/threshold/get', methods=['GET'])
-def get_threshold():
+@app.route('/api/threshold/get/<actuator_id>', methods=['GET'])
+def get_threshold(actuator_id):
     try:
         return jsonify({'message': 'OK'}), 200
     
     except Exception as e:
-        logging.error(f"Error in API call '/api/threshold/get':\n{str(e)}")
+        logging.error(f"Error in API call '/api/threshold/get/{actuator_id}':\n{str(e)}")
         return jsonify({'error': str(e)}), 500
 
 
@@ -33,7 +33,7 @@ def update_threshold():
 
 
 # API entrypoint that deletes a group 
-@app.route('/api/threshold/delete', methods=['POST'])
+@app.route('/api/threshold/delete', methods=['DELETE'])
 def delete_threshold():
     try:
         return jsonify({'message': 'OK'}), 200

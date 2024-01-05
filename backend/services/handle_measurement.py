@@ -21,7 +21,7 @@ def report():
 
         conn = sqlite3.connect('smart_gardening_db.db')
         cursor = conn.cursor()
-        cursor.execute('SELECT sensor_type FROM device WHERE id = ?', (device_id,))
+        cursor.execute('SELECT sensor_type, update_interval FROM device WHERE id = ?', (device_id,))
         conn.commit()
         data = cursor.fetchall()
         print(data)
@@ -39,7 +39,7 @@ def report():
             counter += 1
         conn.close()
 
-        return jsonify({'message': 'OK', 'sleep': 20000}), 201
+        return jsonify({'message': 'OK', 'sleep': data[0][1]}), 201
     
     except AttributeError:
         logging.debug("Atrribute error in API call '/api/measurement/report'")
@@ -58,12 +58,9 @@ def report():
 # So a list with the elements measure_value that indicates the measure value (like temperature)
 # and with measurements, that contain a list with timestamp, value paris for the corresponding sensor and measure value
 
-@app.route('/api/measurement/request', methods=['POST'])
-def request_measurement():
+@app.route('/api/measurement/request/<id>', methods=['GET'])
+def request_measurement(id):
     try:
-        data = request.get_json()
-        id = data['id']
-
         conn = sqlite3.connect('smart_gardening_db.db')
         cursor = conn.cursor()
         cursor.execute('''SELECT DISTINCT measure_type FROM measurement WHERE sensor_id=?''', (id,))
