@@ -5,40 +5,31 @@
 #define NO_OTA_NETWORK
 #include <ArduinoOTA.h> // only for InternalStorage
 
+#include "config.h"
 
-//config for local AP
-const char SSID[] = "MKR1010";
-const char PASS[] = "123456789";
-
-//config for local server
+WiFiServer server(80); //local server availabe on port 80
 int status = WL_IDLE_STATUS; //connection status
-WiFiServer server(80); //server availabe on port 80
-
-
-//config for OTA HTTP update
-WiFiClient    wifiClient;  // HTTP
 
 
 /**
 Connection to backend server to get new image
 **/
-const int SERVER_PORT = 5000;
 
 void handleSketchDownload(String server_ip) {
   const char* SERVER = server_ip.c_str();     // Set hostname
-  String path = "/api/device/update/";        // Set the URI for device
+  String path = String(UPDATE_PATH);          // Set the URI for device
   path.concat(getMacString());                // append MAC to URI
   const char* PATH = path.c_str();            // make it constant
-  const unsigned long CHECK_INTERVAL = 6000;  // Time interval between update checks (ms)
 
   // Time interval check
   static unsigned long previousMillis;
   unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis < CHECK_INTERVAL)
+  if (currentMillis - previousMillis < UPDATE_CHECK_INTERVAL)
     return;
   previousMillis = currentMillis;
 
-  HttpClient client(wifiClient, SERVER, SERVER_PORT);
+  WiFiClient wifiClient; 
+  HttpClient client(wifiClient, SERVER, API_SERVER_PORT);
 
   char buff[32];
   snprintf(buff, sizeof(buff), PATH, 1);
@@ -160,14 +151,25 @@ void sendRegisterDevicePost(const char* server, const int port, String macString
 
 
 void connectToWifi(String wifi_ssid, String wifi_pass){
-  WiFi.end();
+  int count = 0;
+  WiFi.end(); // shutsdown the AP
 
+  //TODO: Try 10 times else reset iot device
   Serial.println("Initialize WiFi");
   status = WL_IDLE_STATUS;
   while (status != WL_CONNECTED) {
-    Serial.print("Attempting to connect to SSID: ");
+    Serial.print("Attempt ");
+    Serial.print(count); 
+    Serial.print(" of connecting to SSID: ");
     Serial.println(wifi_ssid);
     status = WiFi.begin(wifi_ssid.c_str(), wifi_pass.c_str());
+
+    //reset the device if connection to AP was not successful -> human error while providing wifi details
+    if(count > 10){
+      Serial.println("Resetting the device as connection to WiFi failed\n");
+      NVIC_SystemReset();
+    }
+    count += 1;
   }
   Serial.println("WiFi connected");
 }
@@ -199,83 +201,129 @@ void localServer(){
       if (client.available()) {             // if there's bytes to read from the client,
         char c = client.read();             // read a byte, then
         Serial.write(c);                    // print it out to the serial monitor
-        if (c == '\n') {                    // if the byte is a newline character
 
+        if (c != '\r' && c != '\n') {
+          currentLine += c;
+          continue;
+        }
+
+        if (c == '\n') {                    // if the byte is a newline character
+          currentLine.replace("GET", "");
+          currentLine.replace("HTTP/1.1", "");
+          currentLine.trim();
+          Serial.println(currentLine);
+          handleClientRequest(client, currentLine);
           //default page served by the AP.
           //this displays a drop down option to select a wifi network
           //also a field is requiered to provide the wifi pass
           //also the IP of the main server has to be included.
-          if (currentLine.length() == 0) {
-            // HTTP header
-            client.println("HTTP/1.1 200 OK");
-            client.println("Content-type:text/html");
-            client.println();
-
-            // the content of the HTTP response follows the header:
-            client.print(getDefaultHTML());
-
-            // The HTTP response ends with another blank line:
-            client.println();
-            break;
-          }
-          // received a new line
-          else{
-            //check if valid request
-            if(currentLine.indexOf("serverIP") != -1){
-              String wifi_ssid = currentLine.substring(currentLine.indexOf("?wifi="), currentLine.indexOf("&passwd="));
-              wifi_ssid.replace("?wifi=", "");
-              wifi_ssid.trim();
-              String wifi_pass = currentLine.substring(currentLine.indexOf("&passwd="), currentLine.indexOf("&serverIP="));
-              wifi_pass.replace("&passwd=", "");
-              wifi_pass.trim();
-              String server_ip = currentLine.substring(currentLine.indexOf("&serverIP="), currentLine.indexOf("HTTP"));
-              server_ip.replace("&serverIP=", "");
-              server_ip.trim();
-
-              //Serial.println(wifi_ssid);
-              //Serial.println(wifi_pass);
-              //Serial.println(server_ip);
-
-              connectToWifi(wifi_ssid, wifi_pass);
-              sendRegisterDevicePost(server_ip.c_str(), SERVER_PORT, getMacString());
-              while(true){
-                handleSketchDownload(server_ip);
-              }
-            }
+          
             //clear currentLine
-            currentLine = "";
-          }
-        }
-        else if (c != '\r') {    // if you got anything else but a carriage return character,
-          currentLine += c;      // add it to the end of the currentLine
+          currentLine = "";
+          break;
         }
       }
     }
     client.stop();
     Serial.println("client disconnected");
-    }
+  }
 }
 
+void handleClientRequest(WiFiClient client, String uri) {
+  if (uri.length() == 0 || uri == "/") {
+    client.println("HTTP/1.1 200 OK");
+    client.println("Content-type:text/html");
+    client.println();
+    // the content of the HTTP response follows the header:
+    client.print(getDefaultHTML());
+    // The HTTP response ends with another blank line:
+    client.println();
+    return;
+  }
+  else{
+    //check if valid request
+    if(uri.indexOf("serverIP") != -1){
+      String wifi_ssid = uri.substring(uri.indexOf("?wifi="), uri.indexOf("&passwd="));
+      wifi_ssid.replace("?wifi=", "");
+      wifi_ssid.trim();
+      String wifi_pass = uri.substring(uri.indexOf("&passwd="), uri.indexOf("&serverIP="));
+      wifi_pass.replace("&passwd=", "");
+      wifi_pass.trim();
+      String server_ip = uri.substring(uri.indexOf("&serverIP="), uri.length());
+      server_ip.replace("&serverIP=", "");
+      server_ip.trim();
 
-String getDefaultHTML() {
+      //Serial.println(wifi_ssid);
+      //Serial.println(wifi_pass);
+      //Serial.println(server_ip);
+
+      connectToWifi(wifi_ssid, wifi_pass);
+      sendRegisterDevicePost(server_ip.c_str(), API_SERVER_PORT, getMacString());
+      while(true){
+        handleSketchDownload(server_ip);
+      }
+      return;
+    }
+
+    //this code is reached if no valid path has been found -> responde with 404 not found
+    client.println("HTTP/1.1 404 Not Found");
+    client.println("Content-type:text/html");
+    client.println();
+    // the content of the HTTP response follows the header:
+    client.print(get404HTML());
+    // The HTTP response ends with another blank line:
+    client.println();
+  }
+}
+
+String get404HTML() {
   String data = "";
   data += "<!DOCTYPE html>\n";
   data += "<html>\n";
+  data += "<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\">\n";
+  data += "<style>\n";
+  data += "html, body {height: 100%;";
+  data += "body {display: flex; flex-direction: column; justify-content: center; align-items: center;}";
+  data += "</style>\n";
+  data += "<body>\n";
+
+  data += "<h1>404 Not found</h1>\n";
+  data += "<a href='/'>Go to main page</a>";
+
+  data += "</body>\n";
+  data += "</html>";
+
+  return data;
+}
+
+String getDefaultHTML() {
+  String data = "";
+  data = "";
+  data += "<!DOCTYPE html>\n";
+  data += "<html>\n";
+  data += "<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\">\n";
+  data += "<style>\n";
+  data += "html, body {margin: 0px; height: 100%;";
+  data += "body {display: flex; justify-content: center; align-items: center; flex-direction: column;}";
+  data += "lable { padding: 3%;}";
+  data += "#submit { float: right; margin-top: 5px;}";
+  data += "#serverIP, #passwd, #wifi {width: 100%;}";
+  data += "</style>\n";
   data += "<body>\n";
 
   data += "<h1>Setup WiFi network</h1>\n";
 
   data += "<form action='/' id='network_form'>\n";
   data += "  <lable for='networks'>WiFi name:</label>\n";
-  data += "  <input type='text' id='wifi' name='wifi'>\n";
+  data += "  <input type='text' id='wifi' name='wifi' required>\n";
   data += "  <br>\n";
   data += "  <lable for='passwd'>Password:</label>\n";
-  data += "  <input type='text' id='passwd' name='passwd'>\n";
+  data += "  <input type='text' id='passwd' name='passwd' required>\n";
   data += "  <br>\n";
   data += "  <lable for='serverIP'>Server IP:</label>\n";
-  data += "  <input type='text' id='serverIP' name='serverIP'>\n";
+  data += "  <input type='text' id='serverIP' name='serverIP' required>\n";
   data += "  <br>\n";
-  data += "  <input type='submit'>\n";
+  data += "  <input id='submit' type='submit'>\n";
 
   data += "</form>\n";
   data += "</body>\n";
@@ -301,10 +349,10 @@ void printWiFiStatus() {
 
 void createAP(){
   Serial.print("Creating access point named: ");
-  Serial.println(SSID);
+  Serial.println(AP_SSID);
 
   // Create access point with ssid and pass mentioned above.
-  status = WiFi.beginAP(SSID, PASS);
+  status = WiFi.beginAP(AP_SSID, AP_PASS);
   if (status != WL_AP_LISTENING) {
     Serial.println("Creating access point failed");
     // don't continue

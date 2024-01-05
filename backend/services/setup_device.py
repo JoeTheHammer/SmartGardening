@@ -3,6 +3,7 @@ import sqlite3
 
 from flask import request
 from flask import jsonify
+from flask import Response
 
 from __main__ import app
 
@@ -91,3 +92,8 @@ def modify_device_info():
     except Exception as e:
         logging.error(f"Error in API call '/api/device/modify_info':\n{str(e)}")
         return jsonify({'error': str(e)}), 500
+    
+@app.route('/api/device/update/<device_id>', methods=['GET'])
+def get_device_update(device_id):
+    data = open("C:\\Users\\luca\\Desktop\\update.bin", 'rb').read()
+    return data, 200
