@@ -78,7 +78,6 @@ function Sensors() {
     });
 
   useEffect(() => {
-    //TODO: Get sensor list from backend.
     fetchSensorData();
   }, []);
 

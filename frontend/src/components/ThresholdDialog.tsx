@@ -6,7 +6,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Checkbox from "@mui/material/Checkbox";
 
-import { MeasureValue, getMeasureValueFromString } from "../enums";
+import { MeasureValue } from "../enums";
 import { TextField } from "@mui/material";
 
 // Interface definition for this component.

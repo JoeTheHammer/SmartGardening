@@ -6,6 +6,11 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import Typography from "@mui/material/Typography";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import {AccordionDetails} from "@mui/material";
 
 interface Measurement {
   timestamp: Date;
@@ -32,42 +37,44 @@ const formatTimestamp = (timestamp: Date) => {
   });
 };
 
-
-//TODO: Make the whole table as dropbox (auf und zu klappen)
 const SensorDataTable: React.FC<SensorLineChartProps> = ({ sensorData }) => {
   return (
-    <>
-      <TableContainer component={Paper}>
-        <Table
-          sx={{ minWidth: 50, overflow: "auto" }}
-          aria-label="simple table"
-        >
-          <TableHead>
-            <TableRow>
-              <TableCell align="left">
-                <b>Timestamp</b>
-              </TableCell>
-              <TableCell align="left">
-                <b>Value</b>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {sensorData.measurements.reverse().map((measurement) => (
-              <TableRow
-                key={measurement.timestamp.toString()}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {formatTimestamp(measurement.timestamp)}
-                </TableCell>
-                <TableCell align="left">{measurement.value}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </>
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography variant="h6">
+            Show Sensor Data - {sensorData.measure_value}
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 50, overflow: "auto" }} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell align="left">
+                    <b>Timestamp</b>
+                  </TableCell>
+                  <TableCell align="left">
+                    <b>Value</b>
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {sensorData.measurements.reverse().map((measurement) => (
+                    <TableRow
+                        key={measurement.timestamp.toString()}
+                        sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    >
+                      <TableCell component="th" scope="row">
+                        {formatTimestamp(measurement.timestamp)}
+                      </TableCell>
+                      <TableCell align="left">{measurement.value}</TableCell>
+                    </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </AccordionDetails>
+      </Accordion>
   );
 };
 

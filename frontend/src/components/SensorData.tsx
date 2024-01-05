@@ -28,7 +28,7 @@ function SensorData() {
 
 
 
-  const fetchMeasurementeData = async () => {
+  const fetchMeasurementData = async () => {
     try {
       const response = await fetch(measurementDataEndpoint, {
         method: "POST",
@@ -67,8 +67,7 @@ function SensorData() {
   };
 
   useEffect(() => {
-    //TODO: Get sensor data from backend by sensor id.
-    fetchMeasurementeData();
+    fetchMeasurementData();
   }, []);
 
   return (

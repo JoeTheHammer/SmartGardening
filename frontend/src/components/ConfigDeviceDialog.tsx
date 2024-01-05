@@ -19,8 +19,6 @@ export interface ConfigureDeviceDialogProps {
   onClose: (value: string) => void;
 }
 
-//TODO: Add value in seconds in which interval the sensor sends
-
 function ConfigDeviceDialog(props: ConfigureDeviceDialogProps) {
   // Get props from parent component.
   const {
@@ -53,6 +51,48 @@ function ConfigDeviceDialog(props: ConfigureDeviceDialogProps) {
   // Return value to parent component on close.
   const handleClose = () => {
     onClose("");
+  };
+
+  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
+
+  const handleDeleteConfirmationOpen = () => {
+    setDeleteConfirmationOpen(true);
+  };
+
+  const handleDeleteConfirmationClose = () => {
+    setDeleteConfirmationOpen(false);
+  };
+
+  const handleDeleteDevice = async () => {
+    handleDeleteConfirmationClose(); // Close the confirmation dialog
+
+    try {
+      const response = await fetch(`${API_URL}/device/delete`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: id,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const responseData = await response.json();
+      console.log("Server response:", responseData);
+
+      handleClose(); // Close the dialog after successful deletion
+    } catch (error) {
+      console.error("Error deleting device:", error);
+    }
+  };
+
+  // Handle changes of values in dialog.
+  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setName(event.target.value);
   };
 
   // Send value to backend.
@@ -107,63 +147,45 @@ function ConfigDeviceDialog(props: ConfigureDeviceDialogProps) {
     }
   };
 
-  // Handle changes of values in dialog.
-  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setName(event.target.value);
-  };
-
-  const handleDeleteDevice = async () => {
-    try {
-      const response = await fetch(`${API_URL}/device/delete`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id: id,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const responseData = await response.json();
-      console.log("Server response:", responseData);
-
-      handleClose(); // Close the dialog after successful deletion
-    } catch (error) {
-      console.error("Error deleting device:", error);
-    }
-  };
-
-  //TODO: Add conf dialog or warning
-
   return (
-    <React.Fragment>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Configure Device {id}</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            label="Name"
-            fullWidth
-            variant="standard"
-            value={name}
-            onChange={handleNameChange}
-          />
-        </DialogContent>
-        <Button style={{ width: "100%" }} onClick={handleDeleteDevice}>
-          Delete Device
-        </Button>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleSave}>Save</Button>
-        </DialogActions>
-      </Dialog>
-    </React.Fragment>
+      <React.Fragment>
+        <Dialog open={open} onClose={handleClose}>
+          <DialogTitle>Configure Device {id}</DialogTitle>
+          <DialogContent>
+            <TextField
+                autoFocus
+                margin="dense"
+                id="name"
+                label="Name"
+                fullWidth
+                variant="standard"
+                value={name}
+                onChange={handleNameChange}
+            />
+          </DialogContent>
+          <Button style={{ width: "100%" }} onClick={handleDeleteConfirmationOpen}>
+            Delete Device
+          </Button>
+          {/* Delete Confirmation Dialog */}
+          <Dialog open={deleteConfirmationOpen} onClose={handleDeleteConfirmationClose}>
+            <DialogTitle>Delete Device</DialogTitle>
+            <DialogContent>
+              <p>Are you sure you want to delete this device?</p>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleDeleteConfirmationClose}>Cancel</Button>
+              <Button onClick={handleDeleteDevice} color="error">
+                Delete
+              </Button>
+            </DialogActions>
+          </Dialog>
+          {/* End of Delete Confirmation Dialog */}
+          <DialogActions>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button onClick={handleSave}>Save</Button>
+          </DialogActions>
+        </Dialog>
+      </React.Fragment>
   );
 }
 
