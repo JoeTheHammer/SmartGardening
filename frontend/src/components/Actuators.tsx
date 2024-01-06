@@ -19,6 +19,7 @@ import {API_URL} from "../constants.ts";
 import ConfigDeviceDialog, {ConfigureDeviceDialogProps} from "./ConfigDeviceDialog.tsx";
 
 const getActuatorsEndpoint = API_URL + "/device/get_actuators";
+const updateTaskEndpoint = API_URL + "/actuator/update_task";
 
 
 function Actuators() {
@@ -132,10 +133,25 @@ function Actuators() {
       a.id === actuator.id ? { ...a, actionOn: !a.actionOn } : a
     );
     setActuatorList(updatedActuators);
-    console.log(
-      "Actuator" + actuator.id + "set Status to " + !actuator.actionOn
-    );
-    //TODO: Write entry in "Command" table.
+
+    try {
+      fetch(updateTaskEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: actuator.id,
+          status: !actuator.actionOn,
+        }),
+      })
+
+
+    } catch (error) {
+      console.error("Error sending data:", error);
+    }
+
+
   };
 
   const handleGroupDialogClick = (actuator: Actuator) => {
