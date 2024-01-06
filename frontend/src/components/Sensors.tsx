@@ -19,6 +19,7 @@ function Sensors() {
   interface Sensor {
     id: string;
     name: string;
+    updateInterval: number;
     sensorType: SensorType | null;
     measureAmount: string;
   }
@@ -47,6 +48,7 @@ function Sensors() {
 
       const transformedData: {
         measureAmount: string;
+        updateInterval: number;
         sensorType: SensorType | null;
         name: string;
         id: string;
@@ -54,6 +56,7 @@ function Sensors() {
       }[] = result.data.map((row) => ({
         id: row[0],
         name: row[1],
+        updateInterval: +row[5] / 1000,
         type: DeviceType.SENSOR,
         sensorType: getSensorTypeFromString(row[3]),
         measureAmount: row[4],
@@ -71,6 +74,7 @@ function Sensors() {
       open: false,
       id: "",
       initialName: "",
+      initialUpdateInterval: 2000,
       initialDeviceType: DeviceType.SENSOR,
       initialSensorType: null,
       initialMeasureAmount: "",
@@ -87,6 +91,7 @@ function Sensors() {
       open: true,
       id: sensor.id,
       initialName: sensor.name,
+      initialUpdateInterval: sensor.updateInterval,
       initialDeviceType: DeviceType.SENSOR,
       initialSensorType: sensor.sensorType,
       initialMeasureAmount: sensor.measureAmount,
@@ -96,8 +101,6 @@ function Sensors() {
   const handleOpenDataClick = (sensorId: string) => {
     navigate(`/sensor-data/${sensorId}`);
   };
-
-  //TODO: Show update interval
 
   return (
     <>
@@ -122,6 +125,9 @@ function Sensors() {
                 <TableCell align="left">
                   <b>Measure Amount</b>
                 </TableCell>
+                <TableCell align="left">
+                  <b>Update Interval (s)</b>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -136,6 +142,7 @@ function Sensors() {
                   <TableCell align="left">{sensor.id}</TableCell>
                   <TableCell align="left">{sensor.sensorType}</TableCell>
                   <TableCell align="left">{sensor.measureAmount}</TableCell>
+                  <TableCell align="left">{sensor.updateInterval}</TableCell>
                   <TableCell align="left">
                     <Button
                       onClick={() => handleOpenConfigClick(sensor)}

@@ -17,6 +17,7 @@ export interface SetupDeviceDialogProps {
   open: boolean;
   id: string | null;
   initialName: string;
+  initialUpdateInterval: number;
   initialDeviceType: DeviceType | null;
   initialSensorType: SensorType | null;
   initialMeasureAmount: string;
@@ -29,6 +30,7 @@ function SetupDeviceDialog(props: SetupDeviceDialogProps) {
     open,
     id,
     initialName,
+    initialUpdateInterval,
     initialDeviceType,
     initialSensorType,
     initialMeasureAmount,
@@ -40,15 +42,16 @@ function SetupDeviceDialog(props: SetupDeviceDialogProps) {
   const [deviceType, setDeviceType] = useState<DeviceType | null>(null);
   const [sensorType, setSensorType] = useState<SensorType | null>(null);
   const [measureAmount, setMeasureAmount] = useState<string>("");
+  const [updateInterval, setUpdateInterval] = useState<number>(2000);
 
   // Initialize data, use data that was given from parent component.
   useEffect(() => {
     if (open) {
-      console.log("INIT CONFIG DIALOG!");
       setName(initialName);
       setDeviceType(initialDeviceType);
       setSensorType(initialSensorType);
       setMeasureAmount(initialMeasureAmount);
+      setUpdateInterval(initialUpdateInterval)
     }
   }, [open]);
 
@@ -63,6 +66,7 @@ function SetupDeviceDialog(props: SetupDeviceDialogProps) {
     let sendDeviceType = null;
     let sendSensorType = null;
     let sendMeasureAmount = null;
+    let sendUpdateInterval;
 
     if (name !== null) {
       sendName = name;
@@ -81,6 +85,12 @@ function SetupDeviceDialog(props: SetupDeviceDialogProps) {
       }
     }
 
+    if (updateInterval > 0){
+      sendUpdateInterval = updateInterval * 1000;
+    } else {
+      sendUpdateInterval = 2000; //Set 2 sek as default.
+    }
+
     try {
       const response = await fetch(API_URL + "/device/modify_info", {
         method: "POST",
@@ -93,16 +103,13 @@ function SetupDeviceDialog(props: SetupDeviceDialogProps) {
           deviceType: sendDeviceType,
           sensorType: sendSensorType,
           measureAmount: sendMeasureAmount,
-          updateInterval: 2000, //TODO: Remove hardcoded version
+          updateInterval: sendUpdateInterval,
         }),
       });
 
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-
-      const responseData = await response.json();
-      console.log("Server response:", responseData);
 
       handleClose();
     } catch (error) {
@@ -113,6 +120,10 @@ function SetupDeviceDialog(props: SetupDeviceDialogProps) {
   // Handle changes of values in dialog.
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
+  };
+
+  const handleUpdateIntervalChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUpdateInterval(+event.target.value);
   };
 
   const handleDeviceTypeChange = (
@@ -147,10 +158,18 @@ function SetupDeviceDialog(props: SetupDeviceDialogProps) {
             variant="standard"
             value={name}
             onChange={handleNameChange}
+            required
           />
-          <Box mt={2} mb={2}>
-            {/* Separate sections with spacing using Box */}
-          </Box>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="updateInterval"
+            label="Update Interval (s)"
+            fullWidth
+            inputProps={{ type: 'number'}}
+            onChange={handleUpdateIntervalChange}
+            required
+          />
 
           <InputLabel id="device-type-select-label">Device Type</InputLabel>
           <Select

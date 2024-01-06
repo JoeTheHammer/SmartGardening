@@ -25,6 +25,7 @@ function Actuators() {
   interface Actuator {
     id: string;
     name: string;
+    updateInterval: number;
     actionOn: boolean;
   }
 
@@ -40,7 +41,8 @@ function Actuators() {
       const transformedData: { name: string; id: string; actionOn: string }[] = result.data.map((row) => ({
         id: row[0],
         name: row[1],
-        actionOn: row[5]
+        updateInterval: +row[5] / 1000,
+        actionOn: row[6]
       }));
 
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -56,6 +58,7 @@ function Actuators() {
 
   const handleCloseDialog = () => {
     setDialogOpen(false);
+
     setConfigureDialogProps((prevProps) => ({
       ...prevProps,
       open: false,
@@ -72,6 +75,7 @@ function Actuators() {
     }));
 
     fetchActuatorData();
+
     if (isDialogOpen){
       setDialogOpen(false);
     }
@@ -89,6 +93,7 @@ function Actuators() {
       initialDeviceType: DeviceType.ACTUATOR,
       initialSensorType: null,
       initialMeasureAmount: "",
+      initialUpdateInterval: 2000,
       onClose: handleCloseDialog,
     });
 
@@ -118,6 +123,7 @@ function Actuators() {
       id: actuator.id,
       initialName: actuator.name,
       initialDeviceType: DeviceType.ACTUATOR,
+      initialUpdateInterval: actuator.updateInterval
     }));
   };
 
@@ -152,8 +158,6 @@ function Actuators() {
     }));
   };
 
-  //TODO: Show update interval
-
   return (
     <>
       <h2 className="text-center">Actuators</h2>
@@ -171,6 +175,9 @@ function Actuators() {
                 <TableCell align="left">
                   <b>ID</b>
                 </TableCell>
+                <TableCell align="left">
+                  <b>Update Interval (s)</b>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -183,6 +190,9 @@ function Actuators() {
                     {actuator.name}
                   </TableCell>
                   <TableCell align="left">{actuator.id}</TableCell>
+                  <TableCell component="th" scope="row">
+                    {actuator.updateInterval}
+                  </TableCell>
                   <TableCell align="left">
                     <Button
                       onClick={() => handleConfigDialogClick(actuator)}

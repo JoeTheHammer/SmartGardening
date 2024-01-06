@@ -14,6 +14,7 @@ export interface ConfigureDeviceDialogProps {
   open: boolean;
   id: string | null;
   initialName: string;
+  initialUpdateInterval: number;
   initialDeviceType: DeviceType | null;
   initialSensorType: SensorType | null;
   initialMeasureAmount: string;
@@ -26,6 +27,7 @@ function ConfigDeviceDialog(props: ConfigureDeviceDialogProps) {
     open,
     id,
     initialName,
+    initialUpdateInterval,
     initialDeviceType,
     initialSensorType,
     initialMeasureAmount,
@@ -34,6 +36,7 @@ function ConfigDeviceDialog(props: ConfigureDeviceDialogProps) {
 
   // Set variables with state.
   const [name, setName] = useState("");
+  const [updateInterval, setUpdateInterval] = useState(2000);
   const [deviceType, setDeviceType] = useState<DeviceType | null>(null);
   const [sensorType, setSensorType] = useState<SensorType | null>(null);
   const [measureAmount, setMeasureAmount] = useState<string>("");
@@ -41,8 +44,8 @@ function ConfigDeviceDialog(props: ConfigureDeviceDialogProps) {
   // Initialize data, use data that was given from parent component.
   useEffect(() => {
     if (open) {
-      console.log("INIT CONFIG DIALOG!");
       setName(initialName);
+      setUpdateInterval(initialUpdateInterval);
       setDeviceType(initialDeviceType);
       setSensorType(initialSensorType);
       setMeasureAmount(initialMeasureAmount);
@@ -59,6 +62,7 @@ function ConfigDeviceDialog(props: ConfigureDeviceDialogProps) {
   const handleDeleteConfirmationOpen = () => {
     setDeleteConfirmationOpen(true);
   };
+
 
   const handleDeleteConfirmationClose = () => {
     setDeleteConfirmationOpen(false);
@@ -96,12 +100,17 @@ function ConfigDeviceDialog(props: ConfigureDeviceDialogProps) {
     setName(event.target.value);
   };
 
+  const handleUpdateIntervalChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUpdateInterval(+event.target.value);
+  };
+
   // Send value to backend.
   const handleSave = async () => {
     let sendName = null;
     let sendDeviceType = null;
     let sendSensorType = null;
     let sendMeasureAmount = null;
+    let sendUpdateInterval = null;
 
     if (name !== null) {
       sendName = name;
@@ -120,6 +129,12 @@ function ConfigDeviceDialog(props: ConfigureDeviceDialogProps) {
       }
     }
 
+    if (updateInterval > 0){
+      sendUpdateInterval = updateInterval * 1000; // calculate ms from s.
+    } else {
+      sendUpdateInterval = 2000; //set 2s as default.
+    }
+
     try {
       const response = await fetch(API_URL + "/device/modify_info", {
         method: "POST",
@@ -132,7 +147,7 @@ function ConfigDeviceDialog(props: ConfigureDeviceDialogProps) {
           deviceType: sendDeviceType,
           sensorType: sendSensorType,
           measureAmount: sendMeasureAmount,
-          updateInterval: 2000 //TODO: Remove hardcoded version
+          updateInterval: sendUpdateInterval
         }),
       });
 
@@ -163,6 +178,18 @@ function ConfigDeviceDialog(props: ConfigureDeviceDialogProps) {
                 variant="standard"
                 value={name}
                 onChange={handleNameChange}
+                required
+            />
+            <TextField
+                autoFocus
+                margin="dense"
+                id="updateInterval"
+                label="Update Interval (s)"
+                fullWidth
+                value={updateInterval}
+                inputProps={{ type: 'number'}}
+                onChange={handleUpdateIntervalChange}
+                required
             />
           </DialogContent>
           <Button
