@@ -1,0 +1,97 @@
+import { MeasureValue } from "../enums";
+import { useEffect, useState } from "react";
+import SensorLineChart from "./SensorLineChart";
+import SensorDataTable from "./SensorDataTable";
+import {API_URL} from "../constants.ts";
+
+const measurementDataEndpoint = API_URL + "/measurement/request";
+
+interface ApiResponse {
+  data: Array<string | Array<string | null>>;
+}
+
+interface Measurement {
+  timestamp: Date;
+  value: number;
+}
+
+interface SensorDataPerMeasureValue {
+  measure_value: MeasureValue;
+  measurements: Measurement[];
+}
+
+export interface SensorDataDashboardProps {
+  sensorId: string;
+}
+
+function SensorDataDashboard(props: SensorDataDashboardProps) {
+
+  const {
+    sensorId,
+  } = props;
+
+  const [sensorData, setSensorData] =
+      useState<Array<SensorDataPerMeasureValue> | null>(null);
+
+
+
+  const fetchMeasurementData = async () => {
+    try {
+      const response = await fetch(`${measurementDataEndpoint}/${sensorId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const result: ApiResponse = await response.json();
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      setSensorData(result)
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const getMostRecentValue = (
+      measurements: Measurement[] | undefined
+  ): number | null => {
+    if (!measurements || measurements.length === 0) {
+      return null;
+    }
+
+    // Find the measurement with the maximum timestamp
+    const mostRecentMeasurement = measurements.reduce(
+        (max, measurement) =>
+            measurement.timestamp > max.timestamp ? measurement : max,
+        measurements[0]
+    );
+
+    return mostRecentMeasurement.value;
+  };
+
+  useEffect(() => {
+    fetchMeasurementData();
+  }, []);
+
+  return (
+      <>
+        <h4 className="text-center">Data of Sensor {sensorId}</h4>
+        {sensorData && (
+            <>
+              {sensorData.map((currentSensorData) => (
+                  <div key={currentSensorData.measure_value}>
+                    <h5 className="text-center">
+                      {currentSensorData.measure_value}: Current Value: {getMostRecentValue(currentSensorData.measurements)}
+                    </h5>
+                    <SensorLineChart sensorData={currentSensorData} />
+                    <SensorDataTable sensorData={currentSensorData} />
+                  </div>
+              ))}
+            </>
+        )}
+      </>
+  );
+}
+
+export default SensorDataDashboard;
