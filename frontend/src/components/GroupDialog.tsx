@@ -6,9 +6,14 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
 import DialogContentText from "@mui/material/DialogContentText";
-import { SensorType } from "../enums";
+import {SensorType} from "../enums";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import {API_URL} from "../constants.ts";
+
+const getGroupDataEndpoint = API_URL + "/group/request";
+const getAvailableSensorsEndpoint = API_URL + "/group/availableSensors";
+const updateGroupEndpoint = API_URL + "/group/update";
 
 // Interface definition for this component.
 export interface GroupDialogProps {
@@ -30,6 +35,10 @@ interface GroupData {
   assignedSensors: Sensor[];
 }
 
+interface ApiResponse {
+  data: Array<string | Array<string | null>>;
+}
+
 function GroupDialog(props: GroupDialogProps) {
   // Get props from parent component.
   const { open, actuatorId, actuatorName, onClose } = props;
@@ -48,15 +57,86 @@ function GroupDialog(props: GroupDialogProps) {
     },
   ];
 
+  const fetchGroupData = async () => {
+    try {
+      const response = await fetch(`${getGroupDataEndpoint}/${actuatorId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok){
+        const result: ApiResponse = await response.json();
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        const transformedData: {
+          actuatorId: string;
+          name: string;
+          assignedSensors: Sensor[];
+        }[] = result.data ? result.data.map((row) => ({
+          actuatorId: row[0],
+          name: row[1] != null,
+          assignedSensors: row[2],
+        })) : null;
+
+        if (transformedData !== null){
+          setGroupData(transformedData[0]);
+        }
+      }
+
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const fetchAvailableSensorData = async () => {
+    try {
+      const response = await fetch(`${getAvailableSensorsEndpoint}/${actuatorId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok){
+        const result: ApiResponse = await response.json();
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        const transformedData: {
+          id: string;
+          name: string;
+          sensorType: SensorType;
+        }[] = result.data ? result.data.map((row) => ({
+          id: row[0],
+          name: row[1],
+          sensorType: row[2],
+        })) : null;
+
+        if (transformedData !== null){
+          setAvailableSensors(transformedData);
+        }
+
+      }
+
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
   useEffect(() => {
     if (open) {
-      // TODO: Load Initial Group Data
-      // TODO: Load Initial Available Sensors
-      // Set the initial sensor list inside the useEffect hook
-      //setGroupData(initialGroupData);
-      //if (groupData !== null) {
-      //  setFormName(groupData.name);
-      //}
+      // TODO: Activate
+      //fetchGroupData();
+
+      if (groupData !== null) {
+        setFormName(groupData.name);
+      }
+
+      // TODO: Activate
+      // fetchAvailableSensorData()
       setAvailableSensors(initialSensors);
     }
   }, [open]);
@@ -74,12 +154,49 @@ function GroupDialog(props: GroupDialogProps) {
   };
 
   const handleSave = () => {
-    console.log("Save clicked");
-    //TODO: Implement create JSON from groupData and send to backend
+
+    //TODO: Troubleshoot
+    try {
+      fetch(updateGroupEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          groupData: groupData,
+        }),
+      });
+
+      handleClose();
+
+    } catch (error) {
+      console.error("Error sending data:", error);
+    }
+
   };
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFormName(event.target.value);
+    const newName = event.target.value;
+
+    setFormName(newName);
+
+    if (groupData){
+      setGroupData((prevData) => {
+        if (prevData) {
+          return {
+            ...prevData,
+            name: newName,
+          };
+        } else {
+          return {
+            actuatorId: props.actuatorId,
+            name: newName,
+            assignedSensors: [],
+          };
+        }
+      });
+    }
+
   };
 
   const handleClickCreateGroup = () => {
