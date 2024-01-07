@@ -66,6 +66,7 @@ function Setup() {
     initialDeviceType: null,
     initialSensorType: null,
     initialMeasureAmount: "",
+    initialUpdateInterval: 2000,
     onClose: handleCloseDialog,
   };
 

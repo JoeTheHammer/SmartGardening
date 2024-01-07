@@ -14,6 +14,7 @@ import RemoveIcon from "@mui/icons-material/Remove";
 export interface GroupDialogProps {
   open: boolean;
   actuatorId: string;
+  actuatorName: string
   onClose: (value: string) => void;
 }
 
@@ -31,7 +32,7 @@ interface GroupData {
 
 function GroupDialog(props: GroupDialogProps) {
   // Get props from parent component.
-  const { open, actuatorId, onClose } = props;
+  const { open, actuatorId, actuatorName, onClose } = props;
 
   const [groupData, setGroupData] = useState<GroupData | null>(null);
   const [formName, setFormName] = useState<string>("");
@@ -134,7 +135,7 @@ function GroupDialog(props: GroupDialogProps) {
     <>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle className="text-center">
-          Configure Group for Actuator{actuatorId}
+          Configure Group for Actuator {actuatorName}
         </DialogTitle>
         {!groupData ? (
           <>

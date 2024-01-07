@@ -167,7 +167,7 @@ function ConfigDeviceDialog(props: ConfigureDeviceDialogProps) {
   return (
       <React.Fragment>
         <Dialog open={open} onClose={handleClose}>
-          <DialogTitle>Configure Device {id}</DialogTitle>
+          <DialogTitle>Configure Device {initialName}</DialogTitle>
           <DialogContent>
             <TextField
                 autoFocus

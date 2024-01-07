@@ -101,6 +101,7 @@ function Actuators() {
   const [groupDialogProps, setGroupDialogProps] = useState<GroupDialogProps>({
     open: false,
     actuatorId: "",
+    actuatorName: "",
     onClose: handleCloseDialog,
   });
 
@@ -108,6 +109,7 @@ function Actuators() {
     useState<ThresholdDialogProps>({
       open: false,
       actuatorId: "",
+      actuatorName: "",
       onClose: handleCloseDialog,
     });
 
@@ -161,6 +163,7 @@ function Actuators() {
       ...prevProps,
       open: true,
       actuatorId: actuator.id,
+      actuatorName: actuator.name
     }));
   };
 
@@ -171,6 +174,7 @@ function Actuators() {
       ...prevProps,
       open: true,
       actuatorId: actuator.id,
+      actuatorName: actuator.name
     }));
   };
 

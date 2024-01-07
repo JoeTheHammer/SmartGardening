@@ -8,11 +8,20 @@ import Checkbox from "@mui/material/Checkbox";
 
 import { MeasureValue } from "../enums";
 import { TextField } from "@mui/material";
+import {API_URL} from "../constants.ts";
+
+const getThresholdDataEndpoint = API_URL + "/threshold/get";
+const updateThresholdDataEndpoint = API_URL + "/threshold/update";
+
+interface ApiResponse {
+  data: Array<string | Array<string | null>>;
+}
 
 // Interface definition for this component.
 export interface ThresholdDialogProps {
   open: boolean;
   actuatorId: string;
+  actuatorName: string;
   onClose: (value: string) => void;
 }
 
@@ -24,16 +33,44 @@ interface ThresholdData {
 
 function ThresholdDialog(props: ThresholdDialogProps) {
   // Get props from parent component.
-  const { open, actuatorId, onClose } = props;
+  const { open, actuatorId, actuatorName, onClose } = props;
   const [thresholdData, setThresholdData] = useState<ThresholdData[] | null>(
     null
   );
+
+  const fetchThresholdData = async () => {
+    try {
+      const response = await fetch(`${getThresholdDataEndpoint}/${actuatorId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const result: ApiResponse = await response.json();
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      const transformedData: {
+        measureValue: MeasureValue;
+        active: boolean;
+        value: number;
+      }[] = result.data ? result.data.map((row) => ({
+        measureValue: row[0],
+        active: row[2] != null,
+        value: row[2],
+      })) : [];
+
+      setThresholdData([...transformedData]);
+
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   useEffect(() => {
     // Load and set initial threshold values and set data if it exists in the db.
     // Also, set active to true if data exists.
     if (open) {
-      //TODO: Get data from backend and set values if applicable
       const initialThresholdData: ThresholdData[] = Object.values(
         MeasureValue
       ).map((measureValue) => ({
@@ -41,7 +78,13 @@ function ThresholdDialog(props: ThresholdDialogProps) {
         active: false,
         value: 0,
       }));
+
+      //TODO: Comment out
+      //Backend must deliver list of available sensor types (based of sensors in group)
+      //For each sensor type that has a threshold set for the actuator this value must also be delivered.
       setThresholdData(initialThresholdData);
+      //fetchThresholdData();
+
     }
   }, [open]);
 
@@ -51,8 +94,25 @@ function ThresholdDialog(props: ThresholdDialogProps) {
   };
 
   const handleSave = () => {
-    //TODO: Send data to backend to store, close dialog and reload actuators.
-    console.log("Save clicked");
+
+    try {
+      fetch(updateThresholdDataEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          actuatorId: actuatorId,
+          thresholdData: thresholdData,
+        }),
+      });
+
+      handleClose();
+
+    } catch (error) {
+      console.error("Error sending data:", error);
+    }
+
   };
 
   const handleCheckboxChange = (threshold: ThresholdData) => {
@@ -102,7 +162,7 @@ function ThresholdDialog(props: ThresholdDialogProps) {
   return (
     <React.Fragment>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Thresholds for Actuator{actuatorId}</DialogTitle>
+        <DialogTitle>Thresholds for Actuator {actuatorName}</DialogTitle>
         <br></br>
         {thresholdData &&
           thresholdData.length > 0 &&
@@ -129,6 +189,7 @@ function ThresholdDialog(props: ThresholdDialogProps) {
                   value={threshold.value}
                   onChange={(event) => handleNameChange(event, index)}
                   disabled={!threshold.active}
+                  inputProps={{ type: 'number'}}
                 />
               </div>
             </DialogContent>
