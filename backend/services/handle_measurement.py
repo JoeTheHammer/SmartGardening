@@ -25,7 +25,6 @@ def report():
         cursor.execute('SELECT sensor_type, update_interval FROM device WHERE id = ?', (sensor_id,))
         conn.commit()
         data = cursor.fetchall()
-        print(data)
 
         if data[0][0] is None:
             conn.close()
@@ -120,20 +119,16 @@ def check_threshold(sensor_id: str, sensor_type: str, value: int):
                 if int(value) <= threshold:
                     cursor.execute('''INSERT OR REPLACE INTO action_status(id, status)VALUES(?, ?)''',(actuator_id, 1, ))
                     conn.commit()
-                    print(f"Updated value of actuator {actuator_id} to on")
                 else:
                     cursor.execute('''INSERT OR REPLACE INTO action_status(id, status)VALUES(?, ?)''',(actuator_id, 0, ))
                     conn.commit()
-                    print(f"Updated value of actuator {actuator_id} to off")
             else:
                 if int(value) >= threshold:
                     cursor.execute('''INSERT OR REPLACE INTO action_status(id, status)VALUES(?, ?)''',(actuator_id, 1, ))
                     conn.commit()
-                    print(f"Updated value of actuator {actuator_id} to on")
                 else:
                     cursor.execute('''INSERT OR REPLACE INTO action_status(id, status)VALUES(?, ?)''',(actuator_id, 0, ))
                     conn.commit()
-                    print(f"Updated value of actuator {actuator_id} to off")
             
 
     conn.close()

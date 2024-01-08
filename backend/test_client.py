@@ -1,61 +1,95 @@
-import requests
-import random
 import time
+import random
+import requests
+import threading
 
-MACS = ["ughjfeduef", "hgbdhd4653", "64874g3zr", "jor78jn453"]
+THREADS = []
+MAC_SENSORS = [
+    "4NLtny",
+    "IBTaUG",
+    "fxFHuF",
+    "lxWeqy",
+    "wIitnj",
+    "99wzgf",
+    "pBjGOY",
+    "7n5fgu",
+    "x1xw9Z",
+    "RzGO3b",
+    "Q10T0m"
+]
 
-def insert_measuremet_data(mac, value):
-    # Set the URL of your Flask API endpoint
+MAC_ACTUATORS = [
+    "JzqkA9",
+    "tpp7La",
+    "kxhGLb",
+    "T8zvKZ"
+]
+
+def actuator_simulation(mac):
+    api_url = 'http://localhost:5000/api/actuator/get_task/' + mac
+    response = requests.get(api_url)
+    if response.status_code > 300:
+        return
+    
+    data = response.json()
+
+    if int(data['message']) == 1:
+        print(f"The actuator with mac '{mac}' is on")
+    else:
+        print(f"The actuator with mac '{mac}' is off")
+    time.sleep(int(data['sleep']) / 1000)
+
+
+def sensor_simulation(mac, value):
     api_url = 'http://localhost:5000/api/measurement/report'
-    print(f"'{mac}' sending value '{value}'")
-    # Data to be sent in the request body
+    value = generate_value(value)
     data = {'id': mac, 'value': value}
 
     response = requests.post(api_url, json=data)
-    print(response.status_code)
-    try:
-        # Make a POST request to the API endpoint
-        
+    print(f"Sensor with ID '{mac}' reported value '{value}' - {response.status_code}")
+    time.sleep(int(response.json()['sleep']) / 1000)
+    return value
 
-        # Check if the request was successful (status code 201)
-        if response.status_code == 200 or  response.status_code == 201:
-            print("Data reported successfully")
-        else:
-            print(f"Error: {response.status_code} - {response.json()['error']}")
-    except Exception as e:
-        print(f"An error occurred: {e}")
+def generate_value(value):
+    chance_increase = 0.1
+    chance_decrease = 0.2
+    
+    if random.random() < chance_decrease:
+        return value - 1
+    if random.random() < chance_increase:
+        return value + 1
+    return value
 
 
 def register_device(mac):
-    # Set the URL of your Flask API endpoint
     api_url = 'http://localhost:5000/api/device/register'
-
-    # Data to be sent in the request body
     data = {'id': mac}
-
-    try:
-        # Make a POST request to the API endpoint
-        response = requests.post(api_url, json=data)
-
-        # Check if the request was successful (status code 201)
-        if response.status_code == 200 or  response.status_code == 201:
-            print("Device Registered successfully")
-        else:
-            print(f"Error: {response.status_code} - {response.json()['error']}")
-    except Exception as e:
-        print(f"An error occurred: {e}")
+    response = requests.post(api_url, json=data)
+    print(f"Device with ID '{mac}' registered - {response.status_code}")
 
 
-for mac in MACS:
+def main_simulation(mac):
     register_device(mac)
+    value = random.randint(10, 20)
+    while True:
+        if mac in MAC_SENSORS:
+            value = sensor_simulation(mac, value)
+        if mac in MAC_ACTUATORS:
+            actuator_simulation(mac)
 
-while True:
-    for mac in MACS:
-        if mac == "jor78jn453":
-            #insert_measuremet_data(mac, str(random.uniform(10.5, 75.5)) + ";" + str(random.uniform(10.5, 75.5)))
-            insert_measuremet_data(mac, str(random.randint(1,3)) + ";" + str(random.randint(1,3)))
-        else:
-            #insert_measuremet_data(mac, random.uniform(10.5, 75.5))
-            insert_measuremet_data(mac, random.randint(1,3))
-        #time.sleep(0.2)
-    #time.sleep(1.2)
+
+for mac in MAC_SENSORS:
+   t = threading.Thread(target=main_simulation, args=(mac, ))
+   THREADS.append(t)
+
+
+for mac in MAC_ACTUATORS:
+   t = threading.Thread(target=main_simulation, args=(mac, ))
+   THREADS.append(t)
+
+
+for t in THREADS:
+    t.start()
+
+for t in THREADS:
+    t.join()
