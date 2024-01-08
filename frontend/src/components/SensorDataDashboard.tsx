@@ -22,12 +22,14 @@ interface SensorDataPerMeasureValue {
 
 export interface SensorDataDashboardProps {
   sensorId: string;
+  sensorName: string;
 }
 
 function SensorDataDashboard(props: SensorDataDashboardProps) {
 
   const {
     sensorId,
+    sensorName,
   } = props;
 
   const [sensorData, setSensorData] =
@@ -76,7 +78,7 @@ function SensorDataDashboard(props: SensorDataDashboardProps) {
 
   return (
       <>
-        <h4 className="text-center">Data of Sensor {sensorId}</h4>
+        <h4 className="text-center">Data of Sensor {sensorName}</h4>
         {sensorData && (
             <>
               {sensorData.map((currentSensorData) => (

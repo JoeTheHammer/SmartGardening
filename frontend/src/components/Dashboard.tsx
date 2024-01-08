@@ -99,12 +99,12 @@ function Dashboard() {
         <h2 className="text-center">Sensors</h2>
         {sensorList &&
             sensorList.map((sensor) => (
-                <SensorDataDashboard key={sensor.id} sensorId={sensor.id} />
+                <SensorDataDashboard key={sensor.id} sensorId={sensor.id} sensorName={sensor.name} />
             ))}
         <br/>
         <hr/>
         <br/>
-        <h2 className="text-center">Actuators</h2>
+        <h3 className="text-center">Actuators</h3>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <TableContainer component={Paper}>
             <Table>
