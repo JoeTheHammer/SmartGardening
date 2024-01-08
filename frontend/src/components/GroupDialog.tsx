@@ -51,16 +51,6 @@ function GroupDialog(props: GroupDialogProps) {
   const [formName, setFormName] = useState<string>("");
   const [availableSensors, setAvailableSensors] = useState<Array<Sensor>>([]);
 
-  const initialSensors: Array<Sensor> = [
-    { id: "1", name: "Sensor1", sensorType: SensorType.AIR_QUALITY },
-    { id: "2", name: "Sensor 2", sensorType: SensorType.MOISTURE },
-    {
-      id: "3",
-      name: "Sensor 3",
-      sensorType: SensorType.TEMPERATURE_HUMIDITY,
-    },
-  ];
-
   const fetchGroupData = async () => {
     try {
       const response = await fetch(`${getGroupDataEndpoint}/${actuatorId}`, {
@@ -80,15 +70,27 @@ function GroupDialog(props: GroupDialogProps) {
             actuatorId: data.actuator_id,
             groupName: data.group_name,
             sensors: data.assigned_sensors.map((sensor) => ({
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-expect-error
               id: sensor[0],
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-expect-error
               name: sensor[1],
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-expect-error
               sensorType: sensor[2],
             } || []))
           };
 
           const availableSensorData: Sensor[] = data.unassigned_sensors.map((sensor) => ({
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
             id: sensor[0],
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
             name: sensor[1],
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
             sensorType: sensor[2],
           })) || [];
 
