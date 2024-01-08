@@ -11,8 +11,7 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import {API_URL} from "../constants.ts";
 
-const getGroupDataEndpoint = API_URL + "/group/request";
-const getAvailableSensorsEndpoint = API_URL + "/group/availableSensors";
+const getGroupDataEndpoint = API_URL + "/group/sensors";
 const updateGroupEndpoint = API_URL + "/group/update";
 
 // Interface definition for this component.
@@ -31,12 +30,17 @@ interface Sensor {
 
 interface GroupData {
   actuatorId: string;
-  name: string;
-  assignedSensors: Sensor[];
+  groupName: string;
+  sensors: Sensor[];
 }
 
 interface ApiResponse {
-  data: Array<string | Array<string | null>>;
+  data: {
+    actuator_id: string;
+    assigned_sensors: Sensor[];
+    group_name: string;
+    unassigned_sensors: Sensor[];
+  };
 }
 
 function GroupDialog(props: GroupDialogProps) {
@@ -66,85 +70,59 @@ function GroupDialog(props: GroupDialogProps) {
         },
       });
 
-      if (response.ok){
+      if (response.ok) {
         const result: ApiResponse = await response.json();
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        const transformedData: {
-          actuatorId: string;
-          name: string;
-          assignedSensors: Sensor[];
-        }[] = result.data ? result.data.map((row) => ({
-          actuatorId: row[0],
-          name: row[1] != null,
-          assignedSensors: row[2],
-        })) : null;
+        const data = result.data;
 
-        if (transformedData !== null){
-          setGroupData(transformedData[0]);
+        if (Array.isArray(data.unassigned_sensors)) {
+          const transformedData: GroupData = {
+            actuatorId: data.actuator_id,
+            groupName: data.group_name,
+            sensors: data.assigned_sensors.map((sensor) => ({
+              id: sensor[0],
+              name: sensor[1],
+              sensorType: sensor[2],
+            } || []))
+          };
+
+          const availableSensorData: Sensor[] = data.unassigned_sensors.map((sensor) => ({
+            id: sensor[0],
+            name: sensor[1],
+            sensorType: sensor[2],
+          })) || [];
+
+          setGroupData(transformedData);
+          setAvailableSensors(availableSensorData);
+
+          console.log(groupData)
+
+        } else {
+          // Handle the case where data.unassigned_sensors is not an array
+          console.error("Unexpected data format:", data.unassigned_sensors);
         }
       }
-
     } catch (error) {
       console.error("Error fetching data:", error);
     }
-  };
+  }; // <-- Added this closing parenthesis
 
-  const fetchAvailableSensorData = async () => {
-    try {
-      const response = await fetch(`${getAvailableSensorsEndpoint}/${actuatorId}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok){
-        const result: ApiResponse = await response.json();
-
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        const transformedData: {
-          id: string;
-          name: string;
-          sensorType: SensorType;
-        }[] = result.data ? result.data.map((row) => ({
-          id: row[0],
-          name: row[1],
-          sensorType: row[2],
-        })) : null;
-
-        if (transformedData !== null){
-          setAvailableSensors(transformedData);
-        }
-
-      }
-
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
 
   useEffect(() => {
     if (open) {
-      // TODO: Activate
-      //fetchGroupData();
+      fetchGroupData();
 
-      if (groupData !== null) {
-        setFormName(groupData.name);
+      if (groupData !== null && groupData.groupName != "") {
+        setFormName(groupData.groupName);
       }
 
-      // TODO: Activate
-      // fetchAvailableSensorData()
-      setAvailableSensors(initialSensors);
     }
   }, [open]);
 
   useEffect(() => {
     // Set formName after groupData is updated
     if (groupData !== null) {
-      setFormName(groupData.name);
+      setFormName(groupData.groupName);
     }
   }, [groupData]);
 
@@ -163,7 +141,9 @@ function GroupDialog(props: GroupDialogProps) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          groupData: groupData,
+          actuatorId: groupData?.actuatorId,
+          groupName: groupData?.groupName,
+          sensors: groupData?.sensors
         }),
       });
 
@@ -185,13 +165,13 @@ function GroupDialog(props: GroupDialogProps) {
         if (prevData) {
           return {
             ...prevData,
-            name: newName,
+            groupName: newName,
           };
         } else {
           return {
             actuatorId: props.actuatorId,
-            name: newName,
-            assignedSensors: [],
+            groupName: newName,
+            sensors: [],
           };
         }
       });
@@ -204,13 +184,13 @@ function GroupDialog(props: GroupDialogProps) {
       if (prevData) {
         return {
           ...prevData,
-          name: formName,
+          groupName: formName,
         };
       } else {
         return {
           actuatorId: props.actuatorId,
-          name: formName,
-          assignedSensors: [],
+          groupName: formName,
+          sensors: [],
         };
       }
     });
@@ -225,7 +205,7 @@ function GroupDialog(props: GroupDialogProps) {
         setAvailableSensors(updatedAvailableSensors);
         return {
           ...prevData,
-          assignedSensors: [...prevData.assignedSensors, sensor],
+          sensors: [...prevData.sensors, sensor],
         };
       }
       return null;
@@ -236,12 +216,12 @@ function GroupDialog(props: GroupDialogProps) {
     setAvailableSensors([sensor, ...availableSensors]);
     setGroupData((prevData): GroupData | null => {
       if (prevData) {
-        const newSensors = prevData.assignedSensors.filter(
+        const newSensors = prevData.sensors.filter(
           (s) => s.id !== sensor.id
         );
         return {
           ...prevData,
-          assignedSensors: newSensors,
+          sensors: newSensors,
         };
       }
       return null;
@@ -254,7 +234,7 @@ function GroupDialog(props: GroupDialogProps) {
         <DialogTitle className="text-center">
           Configure Group for Actuator {actuatorName}
         </DialogTitle>
-        {!groupData ? (
+        {!groupData || groupData.groupName == "" ? (
           <>
             <DialogContentText
               style={{ paddingLeft: "10px", paddingRight: "10px" }}
@@ -296,8 +276,8 @@ function GroupDialog(props: GroupDialogProps) {
               />
 
               <p className="text-center">Assigned Sensors:</p>
-              {groupData.assignedSensors.length > 0 &&
-                groupData.assignedSensors.map((sensor) => (
+              {groupData.sensors.length > 0 &&
+                groupData.sensors.map((sensor) => (
                   <div
                     key={sensor.id}
                     style={{
