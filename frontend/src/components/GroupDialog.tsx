@@ -97,8 +97,6 @@ function GroupDialog(props: GroupDialogProps) {
           setGroupData(transformedData);
           setAvailableSensors(availableSensorData);
 
-          console.log(groupData)
-
         } else {
           // Handle the case where data.unassigned_sensors is not an array
           console.error("Unexpected data format:", data.unassigned_sensors);

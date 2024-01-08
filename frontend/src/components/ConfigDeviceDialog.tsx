@@ -86,9 +86,6 @@ function ConfigDeviceDialog(props: ConfigureDeviceDialogProps) {
         throw new Error("Network response was not ok");
       }
 
-      const responseData = await response.json();
-      console.log("Server response:", responseData);
-
       handleClose(); // Close the dialog after successful deletion
     } catch (error) {
       console.error("Error deleting device:", error);
@@ -154,9 +151,6 @@ function ConfigDeviceDialog(props: ConfigureDeviceDialogProps) {
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-
-      const responseData = await response.json();
-      console.log("Server response:", responseData);
 
       handleClose();
     } catch (error) {

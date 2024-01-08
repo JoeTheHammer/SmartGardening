@@ -50,7 +50,6 @@ function Actuators() {
       // @ts-expect-error
       setActuatorList([...transformedData]);
 
-      console.log(result);
     } catch (error) {
       console.error("Error fetching data:", error);
     }

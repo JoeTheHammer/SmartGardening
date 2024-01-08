@@ -6,7 +6,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Checkbox from "@mui/material/Checkbox";
 
-import { MeasureValue } from "../enums";
+import {MeasureValue} from "../enums";
 import { TextField } from "@mui/material";
 import {API_URL} from "../constants.ts";
 
@@ -26,9 +26,9 @@ export interface ThresholdDialogProps {
 }
 
 interface ThresholdData {
-  measureValue: MeasureValue;
+  measureType: MeasureValue;
   active: boolean;
-  value: number;
+  threshold: number;
 }
 
 function ThresholdDialog(props: ThresholdDialogProps) {
@@ -48,17 +48,28 @@ function ThresholdDialog(props: ThresholdDialogProps) {
       });
       const result: ApiResponse = await response.json();
 
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
+
       const transformedData: {
-        measureValue: MeasureValue;
+        measureType: MeasureValue;
         active: boolean;
-        value: number;
-      }[] = result.data ? result.data.map((row) => ({
-        measureValue: row[0],
-        active: row[2] != null,
-        value: row[2],
-      })) : [];
+        threshold: number;
+      }[] = result.data ? result.data.map((row) => {
+        return {
+
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
+          measureType: row['measureType'],
+
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
+          active: row['threshold'] != null,
+
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
+          threshold: !row['threshold'] ? 0 : row['threshold'],
+        };
+      }) : [];
+
 
       setThresholdData([...transformedData]);
 
@@ -71,19 +82,7 @@ function ThresholdDialog(props: ThresholdDialogProps) {
     // Load and set initial threshold values and set data if it exists in the db.
     // Also, set active to true if data exists.
     if (open) {
-      const initialThresholdData: ThresholdData[] = Object.values(
-        MeasureValue
-      ).map((measureValue) => ({
-        measureValue,
-        active: false,
-        value: 0,
-      }));
-
-      //TODO: Comment out
-      //Backend must deliver list of available sensor types (based of sensors in group)
-      //For each sensor type that has a threshold set for the actuator this value must also be delivered.
-      setThresholdData(initialThresholdData);
-      //fetchThresholdData();
+      fetchThresholdData();
 
     }
   }, [open]);
@@ -102,7 +101,7 @@ function ThresholdDialog(props: ThresholdDialogProps) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          actuatorId: actuatorId,
+          id: actuatorId,
           thresholdData: thresholdData,
         }),
       });
@@ -120,7 +119,7 @@ function ThresholdDialog(props: ThresholdDialogProps) {
       if (prevData) {
         // Find the index of the threshold in the array
         const index = prevData.findIndex(
-          (item) => item.measureValue === threshold.measureValue
+          (item) => item.measureType === threshold.measureType
         );
 
         if (index !== -1) {
@@ -149,7 +148,7 @@ function ThresholdDialog(props: ThresholdDialogProps) {
         const updatedThresholdData = [...prevData];
         updatedThresholdData[index] = {
           ...updatedThresholdData[index],
-          value: Number(event.target.value),
+          threshold: Number(event.target.value),
         };
 
         return updatedThresholdData;
@@ -167,9 +166,9 @@ function ThresholdDialog(props: ThresholdDialogProps) {
         {thresholdData &&
           thresholdData.length > 0 &&
           thresholdData.map((threshold, index) => (
-            <DialogContent key={threshold.measureValue.toString()}>
+            <DialogContent key={threshold.measureType.toString()}>
               <div
-                key={threshold.measureValue.toString()}
+                key={threshold.measureType.toString()}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -177,7 +176,7 @@ function ThresholdDialog(props: ThresholdDialogProps) {
                 }}
               >
                 <div style={{ flex: 1 }}>
-                  <strong>{threshold.measureValue.toString()}</strong>
+                  <strong>{threshold.measureType.toString()}</strong>
                 </div>
                 <Checkbox
                   checked={threshold.active}
@@ -185,8 +184,7 @@ function ThresholdDialog(props: ThresholdDialogProps) {
                 />
 
                 <TextField
-                  label="Enter value"
-                  value={threshold.value}
+                  value={threshold.threshold}
                   onChange={(event) => handleNameChange(event, index)}
                   disabled={!threshold.active}
                   inputProps={{ type: 'number'}}
