@@ -29,21 +29,36 @@ def get_group():
         return jsonify({'error': str(e)}), 500
     
     
-# API entrypoint that gets called to retrieve all groupssorted by an actuator
-@app.route('/api/group/request/<actuator_id>', methods=['GET'])
+# API entrypoint that gets called to retrieve all groups sorted by an actuator
+@app.route('/api/group/sensors/<actuator_id>', methods=['GET'])
 def get_group_by_actuator(actuator_id):
     try:
         conn = sqlite3.connect('smart_gardening_db.db')
         cursor = conn.cursor()
-        if actuator_id is None: cursor.execute('''SELECT name FROM actuator_group''')
-        else: cursor.execute('''SELECT name FROM actuator_group WHERE actuator_id=(?)''', (actuator_id,))
+
+        cursor.execute('''SELECT name FROM actuator_group WHERE actuator_id=(?)''', (actuator_id, ))
         conn.commit()
-        data = cursor.fetchall()
+        group_name = cursor.fetchall()
+        if len(group_name) == 0: group_name = ''
+        else: group_name = group_name[0][0]
+
+        cursor.execute('''SELECT id, name, sensor_type FROM device WHERE type="Sensor" AND id IN (SELECT sensor_id FROM actuator_group WHERE actuator_id=(?))''', (actuator_id,))
+        conn.commit()
+        assigned_sensors = cursor.fetchall()
+
+        cursor.execute('''SELECT id, name, sensor_type FROM device WHERE type="Sensor" AND id NOT IN (SELECT sensor_id FROM actuator_group WHERE actuator_id=?)''', (actuator_id, ))
+        conn.commit()
+        unassigned_sensors = cursor.fetchall()
         conn.close()
-        return jsonify({'message': data}), 200
+
+        return jsonify({'data': {'actuator_id': actuator_id, 
+                        'group_name': group_name,
+                        'assigned_sensors': assigned_sensors,
+                        'unassigned_sensors': unassigned_sensors
+                        }}), 200
     
     except Exception as e:
-        logging.error(f"Error in API call '/api/group/request/{actuator_id}':\n{str(e)}")
+        logging.error(f"Error in API call '/api/group/sensors/{actuator_id}':\n{str(e)}")
         return jsonify({'error': str(e)}), 500
 
 
@@ -52,17 +67,21 @@ def get_group_by_actuator(actuator_id):
 def update_group():
     try:
         data = request.get_json()
-        actuator_id = data['actuator_id']
-        sensor_id = data['sensor_id']
-        group_name = data['group_name']
+        actuator_id = data['actuatorId']
+        group_name = data['groupName']
+        sensors = data['sensors']
 
         conn = sqlite3.connect('smart_gardening_db.db')
         cursor = conn.cursor()
-        cursor.execute('''
-                UPDATE actuator_group
-                SET sensor_id = ?, actuator_id = ?, name = ?
-            ''',(sensor_id, actuator_id, group_name,))
+
+        cursor.execute('''DELETE FROM actuator_group WHERE actuator_id = ?''', (actuator_id, ))
         conn.commit()
+
+        for sensor in sensors:
+            sensor_id = sensor['id']
+            cursor.execute('''INSERT INTO actuator_group (sensor_id, actuator_id, name) VALUES(?, ?, ?)''', (sensor_id, actuator_id, group_name,))
+            conn.commit()
+
         conn.close()
         return jsonify({'message': 'OK'}), 200
     

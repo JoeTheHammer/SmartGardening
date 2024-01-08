@@ -16,7 +16,18 @@ from __main__ import app
 @app.route('/api/actuator/get_task/<actuator_id>', methods=['GET'])
 def get_actuator_task(actuator_id):
     try:
-        return jsonify({'message': 'OK'}), 200
+        conn = sqlite3.connect('smart_gardening_db.db')
+        cursor = conn.cursor()
+        cursor.execute('''SELECT status FROM action_status WHERE id=?''',(actuator_id, ))
+        conn.commit()
+        status = cursor.fetchall()[0][0]
+        
+        cursor.execute('SELECT update_interval FROM device WHERE id=?', (actuator_id,))
+        conn.commit()
+        data = cursor.fetchall()
+
+        conn.close()
+        return jsonify({'message': status, 'sleep': data[0][0]}), 200
     
     except Exception as e:
         logging.error(f"Error in API call '/api/actuator/get_task/{actuator_id}':\n{str(e)}")
@@ -33,7 +44,7 @@ def update_actuator_task():
 
         conn = sqlite3.connect('smart_gardening_db.db')
         cursor = conn.cursor()
-        cursor.execute('''UPDATE action_status SET id=?, status=?''',(id, status))
+        cursor.execute('''INSERT OR REPLACE INTO action_status(id, status)VALUES(?, ?)''',(id, status, ))
         conn.commit()
         conn.close()
         
@@ -43,8 +54,3 @@ def update_actuator_task():
         logging.error(f"Error in API call '/api/actuator/update_task':\n{str(e)}")
         return jsonify({'error': str(e)}), 500
     
-
-# Check if a threshold has been reached.
-# If this is the case change the internal state for the actuator.
-def check_threshold():
-    return
