@@ -29,6 +29,7 @@ interface ThresholdData {
   measureType: MeasureValue;
   active: boolean;
   threshold: number;
+  isLower: number;
 }
 
 function ThresholdDialog(props: ThresholdDialogProps) {
@@ -53,6 +54,7 @@ function ThresholdDialog(props: ThresholdDialogProps) {
         measureType: MeasureValue;
         active: boolean;
         threshold: number;
+        isLower: number;
       }[] = result.data ? result.data.map((row) => {
         return {
 
@@ -67,6 +69,10 @@ function ThresholdDialog(props: ThresholdDialogProps) {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-expect-error
           threshold: !row['threshold'] ? 0 : row['threshold'],
+
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
+          isLower: row['isLower'],
         };
       }) : [];
 
@@ -158,6 +164,28 @@ function ThresholdDialog(props: ThresholdDialogProps) {
     });
   };
 
+
+
+  const handleDropdownChange = (
+      event: React.ChangeEvent<{ value: unknown }>,
+      index: number
+  ) => {
+    setThresholdData((prevData) => {
+      if (prevData) {
+        // Update the value in the specific threshold
+        const updatedThresholdData = [...prevData];
+        updatedThresholdData[index] = {
+          ...updatedThresholdData[index],
+          isLower: Number(event.target.value),
+        };
+
+        return updatedThresholdData;
+      }
+
+      return prevData;
+    });
+  };
+
   return (
     <React.Fragment>
       <Dialog open={open} onClose={handleClose}>
@@ -168,27 +196,35 @@ function ThresholdDialog(props: ThresholdDialogProps) {
           thresholdData.map((threshold, index) => (
             <DialogContent key={threshold.measureType.toString()}>
               <div
-                key={threshold.measureType.toString()}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "8px",
-                }}
+                  key={threshold.measureType.toString()}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: "8px",
+                  }}
               >
-                <div style={{ flex: 1 }}>
+                <div style={{flex: 1}}>
                   <strong>{threshold.measureType.toString()}</strong>
                 </div>
                 <Checkbox
-                  checked={threshold.active}
-                  onChange={() => handleCheckboxChange(threshold)}
+                    checked={threshold.active}
+                    onChange={() => handleCheckboxChange(threshold)}
                 />
 
                 <TextField
-                  value={threshold.threshold}
-                  onChange={(event) => handleNameChange(event, index)}
-                  disabled={!threshold.active}
-                  inputProps={{ type: 'number'}}
+                    value={threshold.threshold}
+                    onChange={(event) => handleNameChange(event, index)}
+                    disabled={!threshold.active}
+                    inputProps={{type: 'number'}}
                 />
+                <select
+                    value={threshold.isLower ? "1" : "0"}
+                    onChange={(event) => handleDropdownChange(event, index)}
+                >
+                  <option value="1">Lower</option>
+                  <option value="0">Higher</option>
+                </select>
+
               </div>
             </DialogContent>
           ))}
