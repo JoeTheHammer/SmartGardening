@@ -7,8 +7,9 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Checkbox from "@mui/material/Checkbox";
 
 import {MeasureValue} from "../enums";
-import { TextField } from "@mui/material";
+import {Select, TextField } from "@mui/material";
 import {API_URL} from "../constants.ts";
+import MenuItem from "@mui/material/MenuItem";
 
 const getThresholdDataEndpoint = API_URL + "/threshold/get";
 const updateThresholdDataEndpoint = API_URL + "/threshold/update";
@@ -217,13 +218,15 @@ function ThresholdDialog(props: ThresholdDialogProps) {
                     disabled={!threshold.active}
                     inputProps={{type: 'number'}}
                 />
-                <select
+                <Select
                     value={threshold.isLower ? "1" : "0"}
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-expect-error
                     onChange={(event) => handleDropdownChange(event, index)}
                 >
-                  <option value="1">Lower</option>
-                  <option value="0">Higher</option>
-                </select>
+                  <MenuItem value="1">Lower</MenuItem>
+                  <MenuItem value="0">Higher</MenuItem>
+                </Select>
 
               </div>
             </DialogContent>
