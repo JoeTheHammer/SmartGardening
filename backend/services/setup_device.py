@@ -108,8 +108,12 @@ def get_device_update(device_id):
         device_type = cursor.fetchall()[0][0]
 
         if device_type == "Actuator":
-            print("GET Actuator image")
-            return '', 200
+            cursor.execute('''SELECT img_data FROM images WHERE id="Actuator"''')
+            conn.commit()
+            data_enc = cursor.fetchall()[0][0]
+            data = base64.b64decode(data_enc)
+            conn.close()
+            return data, 200
     
         cursor.execute('''SELECT sensor_type FROM device WHERE id=?''', (device_id,))
         conn.commit()
