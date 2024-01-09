@@ -15,9 +15,7 @@ Connection to backend server to get new image
 
 void handleSketchDownload(String server_ip) {
   const char* SERVER = server_ip.c_str();     // Set hostname
-  String path = String(UPDATE_PATH);          // Set the URI for device
-  path.concat(getMacString());                // append MAC to URI
-  const char* PATH = path.c_str();            // make it constant
+  const char* PATH = UPDATE_PATH;            // Set the URI for device
 
   // Time interval check
   static unsigned long previousMillis;
