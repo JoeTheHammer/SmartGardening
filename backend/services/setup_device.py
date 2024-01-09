@@ -129,15 +129,19 @@ def get_device_update(device_id):
     
     #this only triggers if the device has been deleted
     except IndexError:
-        conn = sqlite3.connect('smart_gardening_db.db')
-        cursor = conn.cursor()
-        cursor.execute('''SELECT img_data FROM images WHERE id="default"''')
-        conn.commit()
-        data_enc = cursor.fetchall()[0][0]
-        data = base64.b64decode(data_enc)
-        conn.close()
-        return data, 200
+        return '', 404
 
     except Exception as e:
         logging.error(f"Error in API call '/api/device/update/{device_id}':\n{str(e)}")
         return jsonify({'error': str(e)}), 500
+    
+@app.route('/api/device/update/default', methods=['GET'])
+def get_default_device_update():
+    conn = sqlite3.connect('smart_gardening_db.db')
+    cursor = conn.cursor()
+    cursor.execute('''SELECT img_data FROM images WHERE id="default"''')
+    conn.commit()
+    data_enc = cursor.fetchall()[0][0]
+    data = base64.b64decode(data_enc)
+    conn.close()
+    return data, 200

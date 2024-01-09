@@ -29,6 +29,9 @@ def get_actuator_task(actuator_id):
         conn.close()
         return jsonify({'message': status, 'sleep': data[0][0]}), 200
     
+    except IndexError:
+        return '', 404
+    
     except Exception as e:
         logging.error(f"Error in API call '/api/actuator/get_task/{actuator_id}':\n{str(e)}")
         return jsonify({'error': str(e)}), 500

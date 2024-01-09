@@ -10,7 +10,7 @@ const char* API_SERVER_IP = "192.168.1.135";
 const int API_SERVER_PORT = 5000;
 const unsigned long UPDATE_CHECK_INTERVAL = 6000;
 
-const char* UPDATE_PATH = "/api/device/update/";
+const char* UPDATE_PATH = "/api/device/update/default";
 const char* REGISTER_PATH = "/api/device/register";
 const char* REPORT_PATH = "/api/measurement/report";
 const char* TASK_PATH = "/api/actuator/get_task/";
