@@ -112,18 +112,18 @@ def check_threshold(sensor_id: str, sensor_type: str, value: int):
 
             if len(sensor_data) == 0:continue
             else:
-                threshold = int(sensor_data[0][0])
+                threshold = float(sensor_data[0][0])
                 isLower = int(sensor_data[0][1])
 
             if isLower == 1:
-                if int(value) <= threshold:
+                if float(value) <= threshold:
                     cursor.execute('''INSERT OR REPLACE INTO action_status(id, status)VALUES(?, ?)''',(actuator_id, 1, ))
                     conn.commit()
                 else:
                     cursor.execute('''INSERT OR REPLACE INTO action_status(id, status)VALUES(?, ?)''',(actuator_id, 0, ))
                     conn.commit()
             else:
-                if int(value) >= threshold:
+                if float(value) >= threshold:
                     cursor.execute('''INSERT OR REPLACE INTO action_status(id, status)VALUES(?, ?)''',(actuator_id, 1, ))
                     conn.commit()
                 else:
