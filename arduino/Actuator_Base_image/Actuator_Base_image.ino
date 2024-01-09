@@ -9,6 +9,7 @@
 
 int status = WL_IDLE_STATUS;
 int FAILURE_COUNT = 0;
+int relay = 6;
 /**
 Connection to backend server to get new image
 **/
@@ -115,12 +116,7 @@ void sendGetRequest(String path, String* response, int* status_code){
     Serial.print(":");
     Serial.print(API_SERVER_PORT);
     Serial.println(path);
-    httpClient.print
-    (
-      "GET / HTTP/1.1\n" 
-      "Host: " + path + getMacString() + "\n" +
-      "Connection: close"
-    );
+    httpClient.print("GET " + path + getMacString() + " HTTP/1.1\n");
     httpClient.println();
   }
   else {
@@ -233,11 +229,20 @@ String generatePostJsonData(String macString, String measurementString){
   return jsonPayload;
 }
 
-void switchStateActuator(int value){}
+void switchStateActuator(int value){
+  Serial.println(value);
+  if(value == 1){
+    digitalWrite(relay, HIGH);
+    return;
+  }
+
+  digitalWrite(relay, LOW);
+}
 
 void setup() {
   Serial.begin(9600);
-  while (!Serial);
+  while(!Serial);
+  pinMode(relay, OUTPUT);
   
   connectToWifi();
   String result = "";
