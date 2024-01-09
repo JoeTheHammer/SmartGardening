@@ -118,7 +118,6 @@ def get_device_update(device_id):
         cursor.execute('''SELECT sensor_type FROM device WHERE id=?''', (device_id,))
         conn.commit()
         sensor_type = cursor.fetchall()[0][0]
-        print(f"GET sensor_type image of {sensor_type}")
 
         cursor.execute('''SELECT img_data FROM images WHERE id=?''', (sensor_type,))
         conn.commit()
