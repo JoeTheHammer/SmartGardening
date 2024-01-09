@@ -1,29 +1,120 @@
 #include <WiFiNINA.h>
+#include <ArduinoHttpClient.h>
 #include <ArduinoJson.h>
 
-//const char* ssid = "Vodafone-C02030120";
-//const char* password = "pEyK4khRrLGC6NZr";
+#define NO_OTA_NETWORK
+#include <ArduinoOTA.h> // only for InternalStorage
 
-const char* ssid = "WiFi";
-const char* password = "s1jzsjkw5b";
+#include "config.h"
 
-// REST API endpoint
-const char* server = "192.168.1.7";
-const int port = 5000; // Change this to the appropriate port
+int status = WL_IDLE_STATUS;
+int FAILURE_COUNT = 0;
+/**
+Connection to backend server to get new image
+**/
 
-const int moistureSensorPin = A1;	
+void handleSketchDownload(String server_ip) {
+  const char* SERVER = server_ip.c_str();     // Set hostname
+  const char* PATH = UPDATE_PATH;            // make it constant
 
-WiFiClient wifiClient;
+  // Time interval check
+  static unsigned long previousMillis;
+  unsigned long currentMillis = millis();
+  if (currentMillis - previousMillis < UPDATE_CHECK_INTERVAL)
+    return;
+  previousMillis = currentMillis;
 
-void sendJsonPost(const char* server, const int port, String path, String postData, String* response){
-  WiFiClient myClient;
-  if (myClient.connect(server, port)){
+  WiFiClient wifiClient; 
+  HttpClient client(wifiClient, SERVER, API_SERVER_PORT);
+
+  char buff[32];
+  snprintf(buff, sizeof(buff), PATH, 1);
+
+  Serial.print("Check for update file ");
+  Serial.println(buff);
+
+  // Make the GET request
+  client.get(buff);
+
+  int statusCode = client.responseStatusCode();
+  Serial.print("Update status code: ");
+  Serial.println(statusCode);
+  if (statusCode != 200) {
+    client.stop();
+    return;
+  }
+
+  long length = client.contentLength();
+  if (length == HttpClient::kNoContentLengthHeader) {
+    client.stop();
+    Serial.println("Server didn't provide Content-length header. Can't continue with update.");
+    return;
+  }
+  Serial.print("Server returned update file of size ");
+  Serial.print(length);
+  Serial.println(" bytes");
+
+  if (!InternalStorage.open(length)) {
+    client.stop();
+    Serial.println("There is not enough space to store the update. Can't continue with update.");
+    return;
+  }
+  byte b;
+  while (length > 0) {
+    if (!client.readBytes(&b, 1)) // reading a byte with timeout
+      break;
+    InternalStorage.write(b);
+    length--;
+  }
+  InternalStorage.close();
+  client.stop();
+  if (length > 0) {
+    Serial.print("Timeout downloading update file at ");
+    Serial.print(length);
+    Serial.println(" bytes. Can't continue with update.");
+    return;
+  }
+
+  Serial.println("Sketch update apply and reset.");
+  Serial.flush();
+  InternalStorage.apply(); // this doesn't return
+}
+
+
+String getMacString(){
+  byte mac[6];
+  String macString = "";
+
+  WiFi.macAddress(mac);
+  macString += String(mac[5], HEX);
+  macString += String(mac[4], HEX);
+  macString += String(mac[3], HEX);
+  macString += String(mac[2], HEX);
+  macString += String(mac[1], HEX);
+  macString += String(mac[0], HEX);
+  return macString;
+}
+
+
+String getJsonDataRegister(String macString){
+  String jsonPayload;
+  DynamicJsonDocument doc(200);
+  doc["id"] = macString;
+  serializeJson(doc, jsonPayload);
+  return jsonPayload;
+}
+
+
+void sendJsonPost(String path, String postData, String* response, int* status_code){
+  WiFiClient httpClient;
+
+  if (httpClient.connect(API_SERVER_IP, API_SERVER_PORT)){
     Serial.print("[+]OK: Connected to http//");
-    Serial.print(server);
+    Serial.print(API_SERVER_IP);
     Serial.print(":");
-    Serial.print(port);
+    Serial.print(API_SERVER_PORT);
     Serial.println(path);
-    myClient.print
+    httpClient.print
     (
       String("POST ") + path + " HTTP/1.1\r\n" +
       "Content-Type: application/json\r\n" +
@@ -34,111 +125,27 @@ void sendJsonPost(const char* server, const int port, String path, String postDa
   }
   else {
     Serial.print("[!]Error: Failed to send post to http//");
-    Serial.print(server);
+    Serial.print(API_SERVER_IP);
     Serial.print(":");
-    Serial.print(port);
+    Serial.print(API_SERVER_PORT);
     Serial.println(path);
   }
   
   //wait for data from server
-  while(myClient.available()==0){;}
-  while(myClient.available()){
-    *response +=  myClient.readString();
+  while(httpClient.available()==0){;}
+  while(httpClient.available()){
+    *response +=  httpClient.readString();
   }
+  *status_code = getHttpResponse(*response);
 }
 
-void sendJsonGet(const char* server, const int port, String path, String getData, String* response){
-  WiFiClient myClient;
-  if (myClient.connect(server, port)){
-    Serial.print("[+]OK: Connected to http//");
-    Serial.print(server);
-    Serial.print(":");
-    Serial.print(port);
-    Serial.println(path);
-    myClient.print
-    (
-      String("GET ") + path + " HTTP/1.1\r\n" +
-      "Content-Type: application/json\r\n" +
-      "Content-Length: " + getData.length() + "\r\n" +
-      "\r\n" +
-      getData
-    );
-  }
-  else {
-    Serial.print("[!]Error: Failed to send post to http//");
-    Serial.print(server);
-    Serial.print(":");
-    Serial.print(port);
-    Serial.println(path);
-  }
-  
-  //wait for data from server
-  while(myClient.available()==0){;}
-  while(myClient.available()){
-    *response +=  myClient.readString();
-  }
+int getHttpResponse(String response){
+  String status = response.substring(9, 13);
+  status.trim();
+  return status.toInt();
 }
 
-
-void sendRegisterDevicePost(String macString){
-  String result = "";
-  sendJsonPost(server, port, "/api/device/register", getJsonDataRegister(macString), &result);
-  Serial.println(result);
-}
-
-String getJsonDataRegister(String macString){
-  String jsonPayload;
-  DynamicJsonDocument doc(200);
-  doc["id"] = macString;
-  serializeJson(doc, jsonPayload);
-  return jsonPayload;
-}
-
-void connectToWifi(){
-  WiFi.begin(ssid, password);
-
-  if (WiFi.status() == WL_NO_MODULE) {
-    Serial.println("Communication with WiFi module failed");
-  }
-
-  Serial.println("Connecting to WiFi...");
-
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-
-  Serial.println("\n");
-  Serial.println("Connected to WiFi network");
-
-}
-
-String getMacString(){
-
-  byte mac[6];
-  String macString = "";
-
-  WiFi.macAddress(mac);
-
-  macString += String(mac[5], HEX);
-  macString += String(mac[4], HEX);
-  macString += String(mac[3], HEX);
-  macString += String(mac[2], HEX);
-  macString += String(mac[1], HEX);
-  macString += String(mac[0], HEX);
-
-  Serial.println("MAC Address: " + macString);
-
-  return macString;
-
-}
-
-void connectToWifiAndRegister(){
-  connectToWifi();
-  sendRegisterDevicePost(getMacString());
-}
-
-String extractResponse(String response, String key){
+String getResponse(String response, String key){
   int jsonStart = response.indexOf('{');
 
   // Extract the JSON content
@@ -156,23 +163,97 @@ String extractResponse(String response, String key){
   return message;
 }
 
+
+void sendRegisterDevicePost(const char* server, const int port, String macString){
+  String result = "";
+  int status_code = 0;
+  sendJsonPost(REGISTER_PATH, getJsonDataRegister(macString), &result, &status_code);
+  Serial.println(result);
+}
+
+void connectToWifi(){
+  status = WL_IDLE_STATUS;
+
+  if (WiFi.status() == WL_NO_MODULE) {
+    Serial.println("Communication with WiFi module failed");
+    return;
+  }
+
+  while (status != WL_CONNECTED) {
+    Serial.print("Attempt to connect to SSID: ");
+    Serial.println(SSID);
+    status = WiFi.begin(SSID, PASS);
+  }
+  Serial.println("WiFi connected");
+}
+
+/**
+Code below has to be modified for each iot device img
+**/
+String generatePostJsonData(String macString, String measurementString){
+  String jsonPayload;
+  DynamicJsonDocument doc(200);
+  doc["id"] = macString;
+  doc["value"] = measurementString;
+  serializeJson(doc, jsonPayload);
+  return jsonPayload;
+}
+
+
 void setup() {
   Serial.begin(9600);
-  Serial.println("Begin Setup ...");
-  //connectToWifiAndRegister();
+  while (!Serial);
   
+  connectToWifi();
+  String result = "";
+  int status_code = 0;
+  sendJsonPost(REGISTER_PATH, getJsonDataRegister(getMacString()), &result, &status_code);
+  Serial.print("Server response is ");
+  Serial.println(result);
+}
+
+double getDataFromMoistureSensor(){
+  float moisture_percentage;
+  int sensorValue;
+  sensorValue = analogRead(A0);
+    moisture_percentage = ( 100 - ( (sensorValue/1023.00) * 100 ) );
+  return moisture_percentage;
+}
+
+String getMoisturePostData(){
+  String jsonPayload;
+  DynamicJsonDocument doc(200);
+  doc["id"] = getMacString();
+  doc["value"] = getDataFromMoistureSensor();
+  serializeJson(doc, jsonPayload);
+  return jsonPayload;
 }
 
 void loop() {
-  float moisture_percentage;
-  int sensorValue;
-  sensorValue = analogRead(moistureSensorPin);
-  Serial.println(sensorValue);
-  moisture_percentage = ( 100 - ( (sensorValue/1023.00) * 100 ) );
-  Serial.print("Moisture Percentage = ");
-  Serial.print(moisture_percentage);
-  Serial.print("%\n\n");
-  delay(1000);
-}
- 
+  String result = "";
+  int status_code = 0;
+  String postData = "";
 
+  //Change string postData to include the mac of the device using getMac() and the value(s) that got collected by the sensor
+  postData = getMoisturePostData();
+
+  sendJsonPost(REPORT_PATH, postData, &result, &status_code);
+
+  if(status_code == 404){
+    FAILURE_COUNT += 1;
+    if(FAILURE_COUNT >= 3) {
+      handleSketchDownload(API_SERVER_IP);
+    }
+    delay(DEFAULT_DELAY);
+  }
+
+  if(status_code >= 200 && status_code <= 300){
+    Serial.println(getResponse(result, "message"));
+    int sleep_value = getResponse(result, "sleep").toInt();
+    Serial.println(sleep_value);
+    WiFi.disconnect();
+    WiFi.end();
+    delay(sleep_value);
+    connectToWifi();
+  }
+}
