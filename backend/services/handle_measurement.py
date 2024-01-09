@@ -47,6 +47,10 @@ def report():
         logging.debug("Atrribute error in API call '/api/measurement/report'")
         return '', 422
     
+    except IndexError:
+        logging.debug("IndexError in API call '/api/measurement/report' -> means not a valid sensor")
+        return '', 404
+    
     except Exception as e:
         logging.error(f"Error in API call '/api/measurement/report':\n{str(e)}")
         return jsonify({'error': str(e)}), 500
