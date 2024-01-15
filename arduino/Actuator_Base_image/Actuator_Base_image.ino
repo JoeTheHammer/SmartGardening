@@ -272,7 +272,8 @@ void loop() {
   if(status_code >= 200 && status_code <= 300){
     Serial.println(getResponse(result, "message"));
     //TODO: Add actuator on/off logic based on response of the server
-    switchStateActuator(getResponse(result, "message").toInt());
+    int value = getResponse(result, "message").toInt();
+    switchStateActuator(value);
     
     int sleep_value = getResponse(result, "sleep").toInt();
     Serial.println(sleep_value);
