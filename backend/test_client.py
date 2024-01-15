@@ -19,36 +19,41 @@ MAC_SENSORS = [
 ]
 
 MAC_ACTUATORS = [
-    "JzqkA9",
-    "tpp7La",
-    "kxhGLb",
-    "T8zvKZ"
+    "JzqkA9zz",
+    "tpp7Lazz",
+    "kxhGLbzz",
+    "T8zvKZzz"
 ]
 
 def actuator_simulation(mac):
-    api_url = 'http://localhost:5000/api/actuator/get_task/' + mac
-    response = requests.get(api_url)
-    if response.status_code > 300:
-        return
-    
-    data = response.json()
+    try:
+        api_url = 'http://localhost:5000/api/actuator/get_task/' + mac
+        response = requests.get(api_url)
+        if response.status_code > 300:
+            return
+        
+        data = response.json()
 
-    if int(data['message']) == 1:
-        print(f"The actuator with mac '{mac}' is on")
-    else:
-        print(f"The actuator with mac '{mac}' is off")
-    time.sleep(int(data['sleep']) / 1000)
+        if int(data['message']) == 1:
+            print(f"The actuator with mac '{mac}' is on")
+        else:
+            print(f"The actuator with mac '{mac}' is off")
+        time.sleep(int(data['sleep']) / 1000)
+    except:pass
 
 
 def sensor_simulation(mac, value):
-    api_url = 'http://localhost:5000/api/measurement/report'
-    value = generate_value(value)
-    data = {'id': mac, 'value': value}
+    try:
+        api_url = 'http://localhost:5000/api/measurement/report'
+        value = generate_value(value)
+        data = {'id': mac, 'value': value}
 
-    response = requests.post(api_url, json=data)
-    print(f"Sensor with ID '{mac}' reported value '{value}' - {response.status_code}")
-    time.sleep(int(response.json()['sleep']) / 1000)
-    return value
+        response = requests.post(api_url, json=data)
+        print(f"Sensor with ID '{mac}' reported value '{value}' - {response.status_code}")
+        time.sleep(int(response.json()['sleep']) / 1000)
+        return value
+    except:
+        return value
 
 def generate_value(value):
     chance_increase = 0.1
