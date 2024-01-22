@@ -26,7 +26,7 @@ def get_group():
     
     except Exception as e:
         logging.error(f"Error in API call '/api/group/request':\n{str(e)}")
-        return jsonify({'error': str(e)}), 500
+        return "Internal Server Error", 500
     
     
 # API entrypoint that gets called to retrieve all groups sorted by an actuator
@@ -59,7 +59,7 @@ def get_group_by_actuator(actuator_id):
     
     except Exception as e:
         logging.error(f"Error in API call '/api/group/sensors/{actuator_id}':\n{str(e)}")
-        return jsonify({'error': str(e)}), 500
+        return "Internal Server Error", 500
 
 
 # API entrypoint that gets called by user to create a group based on the actuator
@@ -87,7 +87,7 @@ def update_group():
     
     except Exception as e:
         logging.error(f"Error in API call '/api/group/update':\n{str(e)}")
-        return jsonify({'error': str(e)}), 500
+        return "Internal Server Error", 500
 
 
 # API entrypoint that deletes a group 
@@ -116,7 +116,7 @@ def delete_group():
     
     except Exception as e:
         logging.error(f"Error in API call '/api/group/delete':\n{str(e)}")
-        return jsonify({'error': str(e)}), 500
+        return "Internal Server Error", 500
 
 
 #TODO: Add SQL for removing the sensor from the group
@@ -147,4 +147,4 @@ def delete__sensor_from_group():
     
     except Exception as e:
         logging.error(f"Error in API call '/api/group/delete':\n{str(e)}")
-        return jsonify({'error': str(e)}), 500
+        return "Internal Server Error", 500

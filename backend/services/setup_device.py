@@ -37,7 +37,7 @@ def register():
     
     except Exception as e:
         logging.error(f"Error in API call '/api/device/register':\n{str(e)}")
-        return jsonify({'error': str(e)}), 500
+        return "Internal Server Error", 500
     
 
 # API endpoint for unconfigured devices
@@ -55,7 +55,7 @@ def new_devices():
 
     except Exception as e:
         logging.error(f"Error in API call '/api/device/new':\n{str(e)}")
-        return jsonify({'error': str(e)}), 500
+        return "Internal Server Error", 500
     
 
 # API entrypoint for adds or modifies info stored in the DB for a specific device
@@ -93,7 +93,7 @@ def modify_device_info():
 
     except Exception as e:
         logging.error(f"Error in API call '/api/device/modify_info':\n{str(e)}")
-        return jsonify({'error': str(e)}), 500
+        return "Internal Server Error", 500
 
 
 @app.route('/api/device/update/<device_id>', methods=['GET'])
@@ -132,7 +132,7 @@ def get_device_update(device_id):
 
     except Exception as e:
         logging.error(f"Error in API call '/api/device/update/{device_id}':\n{str(e)}")
-        return jsonify({'error': str(e)}), 500
+        return "Internal Server Error", 500
     
 @app.route('/api/device/update/default', methods=['GET'])
 def get_default_device_update():

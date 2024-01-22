@@ -45,7 +45,7 @@ def get_threshold(actuator_id):
     
     except Exception as e:
         logging.error(f"Error in API call '/api/threshold/get/{actuator_id}':\n{str(e)}")
-        return jsonify({'error': str(e)}), 500
+        return "Internal Server Error", 500
 
 
 # API entrypoint that creates/updates a group 
@@ -73,7 +73,7 @@ def update_threshold():
     
     except Exception as e:
         logging.error(f"Error in API call '/api/threshold/update':\n{str(e)}")
-        return jsonify({'error': str(e)}), 500
+        return "Internal Server Error", 500
 
 
 # API entrypoint that deletes threshold for a actuator
@@ -88,4 +88,4 @@ def delete_threshold(actuator_id):
     
     except Exception as e:
         logging.error(f"Error in API call '/api/threshold/delete':\n{str(e)}")
-        return jsonify({'error': str(e)}), 500
+        return "Internal Server Error", 500

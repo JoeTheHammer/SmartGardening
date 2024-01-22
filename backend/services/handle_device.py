@@ -20,7 +20,7 @@ def get_sensors():
         return jsonify({'data': data}), 200
     except Exception as e:
         logging.error(f"Error in API call '/api/device/get_sensors':\n{str(e)}")
-        return jsonify({'error': str(e)}), 500
+        return "Internal Server Error", 500
     
 
 @app.route('/api/device/get_actuators', methods=['GET'])
@@ -44,7 +44,7 @@ def get_actuators():
     
     except Exception as e:
         logging.error(f"Error in API call '/api/device/get_actuators':\n{str(e)}")
-        return jsonify({'error': str(e)}), 500
+        return "Internal Server Error", 500
 
 
 # API endpoint for deleting a device
@@ -72,4 +72,4 @@ def delete_sensors():
     
     except Exception as e:
         logging.error(f"Error in API call '/api/device/get_sensors':\n{str(e)}")
-        return jsonify({'error': str(e)}), 500
+        return "Internal Server Error", 500

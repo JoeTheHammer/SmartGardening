@@ -34,7 +34,7 @@ def get_actuator_task(actuator_id):
     
     except Exception as e:
         logging.error(f"Error in API call '/api/actuator/get_task/{actuator_id}':\n{str(e)}")
-        return jsonify({'error': str(e)}), 500
+        return "Internal Server Error", 500
 
 
 # API entrypoint that gets called by user action
@@ -55,5 +55,5 @@ def update_actuator_task():
     
     except Exception as e:
         logging.error(f"Error in API call '/api/actuator/update_task':\n{str(e)}")
-        return jsonify({'error': str(e)}), 500
+        return "Internal Server Error", 500
     

@@ -53,7 +53,7 @@ def report():
     
     except Exception as e:
         logging.error(f"Error in API call '/api/measurement/report':\n{str(e)}")
-        return jsonify({'error': str(e)}), 500
+        return "Internal Server Error", 500
 
 
 
@@ -92,7 +92,7 @@ def request_measurement(id):
         return '', 422
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return "Internal Server Error", 500
     
 
 
